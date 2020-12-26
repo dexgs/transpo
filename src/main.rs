@@ -1,5 +1,5 @@
 use actix_files::{NamedFile, Files};
-use actix_web::{get, web::{self, Bytes}, App, HttpServer, HttpRequest, HttpResponse, Responder, Result};
+use actix_web::{get, web, App, HttpServer, HttpRequest, HttpResponse, Responder, Result};
 use actix_multipart::{Multipart, Field};
 use actix_http::error::ErrorPreconditionFailed;
 use futures::{TryStreamExt, StreamExt};
@@ -11,14 +11,8 @@ use std::str::FromStr;
 
 mod store;
 mod delete_worker;
-
-// 500MB
-const MAX_UPLOAD_SIZE: usize = 500000000;
-// 5GB
-const MAX_STORAGE_CAPACITY: usize = 5000000000;
-
-const STORAGE_DIR: &'static str = "./storage";
-
+mod time;
+mod config;
 
 async fn form_response(payload: Multipart) -> impl Responder {
     if let Ok(response) = parse_form(payload).await {
@@ -44,10 +38,21 @@ async fn parse_form(mut payload: Multipart) -> Result<HttpResponse> {
     if days == 0 && hours == 0 && minutes == 0 {
         return Err(ErrorPreconditionFailed("File must live at least 1 minute"));
     }
+
+    if minutes > config::MAX_MINUTES || hours > config::MAX_HOURS || days > config::MAX_DAYS {
+        return Err(ErrorPreconditionFailed(
+                format!("Maximum allowed time is {} days, {} hours and {} minutes.",
+                        config::MAX_DAYS, config::MAX_HOURS, config::MAX_MINUTES)));
+    }
     
     let download_limit: u32 = parse_next_field(&mut payload).await?;
-    let password: String = parse_next_field(&mut payload).await.unwrap_or(String::new());
 
+    if download_limit > config::MAX_DOWNLOAD_LIMIT {
+        return Err(ErrorPreconditionFailed(
+                format!("Download limit can be at most {}.", config::MAX_DOWNLOAD_LIMIT)));
+    }
+
+    let password: String = parse_next_field(&mut payload).await.unwrap_or(String::new());
 
     let upload_config = UploadConfig{
         days: days,
@@ -56,9 +61,8 @@ async fn parse_form(mut payload: Multipart) -> Result<HttpResponse> {
         download_limit: if download_limit != 0 {Some(download_limit)} else {None},
         password_hash: if password.len() != 0 {Some(hash_string(password))} else {None}
     };
-    
-    let path = PathBuf::from(STORAGE_DIR);
-    store::store_files(MAX_UPLOAD_SIZE, path, upload_config, payload).await
+
+    store::store_files(upload_config, payload).await
 }
 
 fn hash_string(string: String) -> u64 {
