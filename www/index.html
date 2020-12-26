@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Transpo</title>
+    </head>
+    <body>
+        <div>
+            <h1>Transpo</h1>
+            <form action="/" id="upload-form" method="post" enctype="multipart/form-data">
+                <div id="file-area">
+                    Drag and drop or
+                    <!--https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js-->
+                    <button type="button" onclick="document.getElementById('file-input').click();">Select Files</button>
+                    <div id="file-previews">
+                    </div>
+                    <p>
+                        <div id="all-files" style="display: none;">
+                            Total size:
+                            <span id="total-size"></span>
+                            <button type="button" id="remove-all-files" onclick="removeAllFiles()">Remove All</button>
+                        </div>
+                    </p>
+                </div>
+                <input id="file-input" multiple type="file" style="display: none;" onchange="addFiles(this.files)">
+                <!--TIME LIMIT-->
+                <p>
+                    Time limit:
+                    <input id="days" type="number" min="0" max="6" step="1" value="0" size="3">
+                    <label for="days">Days</label>
+                    <input id="hours" type="number" min="0" max="23" step="1" value="0" size="3">
+                    <label for="hours">Hours</label>
+                    <input id="minutes" type="number" min="0" max="59" step="1" value="30" size="3">
+                    <label for="minutes">Minutes</label>
+                </p>
+                <!--DOWNLOAD LIMIT-->
+                <p>
+                    <input id="enable-download-limit" type="checkbox">
+                    <label for="enable-download-limit">Expire after:</label>
+                    <input id="download-limit" type="number" min="1" max="999" step="1" value="5" size="5">
+                    <label for="download-limit">Downloads</label>
+                </p>
+                <!--PASSWORD-->
+                <p>
+                    <input id="enable-password" type="checkbox">
+                    <label for="enable-password">Password:</label>
+                    <input id="password" type="text">
+                </p>
+                <p>
+                    <input id="upload" type="submit" value="Upload">
+                </p>
+            </form>
+        </div>
+
+        <template id="file-preview">
+            <div class="file-preview">
+                <p></p>
+                <span class="file-size"></span>
+                <span class="file-name"></span>
+                <button type="button" onclick="removePreviewAndFile(this.parentNode)">Remove</button>
+            </div>
+        </template>
+        
+        <!-- SCRIPT -->
+        <script src="www/transpo.js"></script>
+        <script src="www/form.js"></script>
+    </body>
+</html>
