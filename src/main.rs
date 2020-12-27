@@ -1,7 +1,9 @@
+use serde::Deserialize;
+
 use actix_files::{NamedFile, Files};
-use actix_web::{get, web, App, HttpServer, HttpRequest, HttpResponse, Responder, Result};
+use actix_web::{web::{self, Form}, App, HttpServer, HttpRequest, HttpResponse, Responder, Result};
 use actix_multipart::{Multipart, Field};
-use actix_http::error::ErrorPreconditionFailed;
+use actix_http::error::{ErrorPreconditionFailed, ErrorInsufficientStorage};
 use futures::{TryStreamExt, StreamExt};
 
 use std::collections::hash_map::DefaultHasher;
@@ -9,16 +11,21 @@ use std::hash::Hasher;
 use std::path::PathBuf;
 use std::str::FromStr;
 
+use fs_extra;
+
 mod store;
 mod delete_worker;
 mod time;
 mod config;
+mod load;
+mod fs;
+mod expiring_file;
 
 async fn form_response(payload: Multipart) -> impl Responder {
-    if let Ok(response) = parse_form(payload).await {
-        return response;
+    match parse_form(payload).await {
+        Ok(response) => response,
+        Err(e) => e.into()
     }
-    HttpResponse::Ok().body("haha")
 }
 
 pub struct UploadConfig {
@@ -30,6 +37,9 @@ pub struct UploadConfig {
 }
 
 async fn parse_form(mut payload: Multipart) -> Result<HttpResponse> {
+    if fs_extra::dir::get_size(PathBuf::from(config::STORAGE_PATH)).ok().ok_or(())? as usize + config::MAX_UPLOAD_SIZE > config::MAX_STORAGE_CAPACITY {
+        return Err(ErrorInsufficientStorage("The server has reached capacity"));
+    }
     // expecting this order: days, hours, minutes, download limit, password, files
     let days: u32 = parse_next_field(&mut payload).await?;
     let hours: u32 = parse_next_field(&mut payload).await?;
@@ -92,15 +102,42 @@ async fn index(_req: HttpRequest) -> Result<NamedFile> {
     Ok(NamedFile::open(path)?)
 }
 
+async fn download(req: HttpRequest) -> Result<impl Responder> {
+    let name = String::from(&req.match_info()[0]);
+    Ok(load::load_file(name, None).await?)
+}
+
+#[derive(Deserialize)]
+struct DownloadForm {
+    name: String,
+    password: String
+}
+
+async fn download_form(form: Form<DownloadForm>) -> Result<impl Responder> {
+    let form = form.into_inner();
+    let password = if form.password.len() == 0 {
+        None
+    } else {
+        Some(hash_string(form.password))
+    };
+
+    Ok(load::load_file(form.name, password).await?)
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+
+    delete_worker::spawn();
+
     HttpServer::new(|| {
         App::new()
+            .route("/{name}", web::get().to(download))
+            .route("/{name}", web::post().to(download_form))
             .route("/", web::post().to(form_response))
             .route("/", web::get().to(index))
             .service(Files::new("www", "./www"))
     })
-    .bind("127.0.0.1:8080")?
+    .bind(format!("127.0.0.1:{}", config::PORT))?
     .run()
     .await
 }

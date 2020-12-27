@@ -53,11 +53,11 @@ pub async fn store_files(upload_config: UploadConfig, mut payload: Multipart) ->
     }
     
     let d = dir.clone();
-    if num_files > 1 {
+    if num_files > 1 || total_size >= config::COMPRESSION_THRESHOLD {
         let n = name.clone();
         web::block(move || {
-            zip(&d, n)?;
-            fs::remove_dir_all(d)
+            zip(&d, n)
+            //fs::remove_dir_all(d)
         }).await?;
     } else {
         web::block(move || fs::rename(&d, d.parent().unwrap().join("file")))
@@ -69,7 +69,7 @@ pub async fn store_files(upload_config: UploadConfig, mut payload: Multipart) ->
     let d = dir.clone();
     web::block(move || store_metadata(d, upload_config)).await?;
 
-    Ok(HttpResponse::Ok().body("haha"))
+    Ok(HttpResponse::Ok().body(name))
 }
 
 fn store_metadata(dir: PathBuf, c: UploadConfig) -> std::io::Result<()> {
@@ -82,7 +82,7 @@ fn store_metadata(dir: PathBuf, c: UploadConfig) -> std::io::Result<()> {
         remaining_downloads.write_all(format!("{}", download_limit).as_bytes())?;
     }
     let mut expiry_date_file = fs::File::create(dir.join("expiry_date"))?;
-    expiry_date_file.write_all(time::expiry(c.days, c.hours, c.minutes).to_string().as_bytes())?;
+    expiry_date_file.write_all(time::expiry(c.days, c.hours, c.minutes).to_rfc2822().as_bytes())?;
     Ok(())
 }
 
@@ -98,14 +98,14 @@ fn gen_name(storage_dir: PathBuf) -> std::io::Result<String> {
     Ok(name)
 }
 
-fn zip(dir: &PathBuf, name: String) -> std::io::Result<ExitStatus> {
-    let dir = dir.parent().unwrap().join("file");
-    fs::create_dir_all(&dir)?;
+fn zip(tmp_dir: &PathBuf, name: String) -> std::io::Result<ExitStatus> {
+    let file_dir = tmp_dir.parent().unwrap().join("file");
+    fs::create_dir_all(&file_dir)?;
     // *nix dependent. may add windows support in future
     Command::new("zip")
-        .arg("-r")
-        .arg(dir.join(format!("{}_{}.zip", config::ZIP_PREFIX, name)))
-        .arg(dir)
+        .arg("-rj")
+        .arg(file_dir.join(format!("{}_{}.zip", config::ZIP_PREFIX, name)))
+        .arg(tmp_dir)
         .spawn()?
         .wait()
 }

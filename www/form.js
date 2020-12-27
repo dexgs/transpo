@@ -42,6 +42,8 @@ form.onsubmit = function() {
 
   xhr.onreadystatechange = function() {
     if (xhr.readyState == 4 && xhr.status == 200) {
+      removeAllFiles();
+      console.log(xhr.responseText);
     }
   }
 
