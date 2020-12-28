@@ -14,3 +14,6 @@ Since it's been completed I am slowly tidying and improving it.
 
 ## Planned:
 * Client-side encryption and decryption of files
+
+## Installation:
+Clone this repository, adjust the settings in `src/config.rs` to your liking, navigate to the directory and build it with `cargo build --release` and run it with `cargo run --release`
