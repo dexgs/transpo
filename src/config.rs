@@ -21,7 +21,7 @@ pub const MAX_DOWNLOAD_LIMIT: u32 = 999;
 
 // path at which data is saved. is relative to the dir from
 // which transpo is run by default, but can be made absolute
-pub const STORAGE_PATH: &'static str = "./storage";
+pub const STORAGE_PATH: &'static str = "/mnt/vault/transpo_storage";
 
 // length of random file names. set to a length where you will
 // not run out of names. names are random ASCII, so number of
