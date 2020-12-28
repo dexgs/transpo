@@ -109,11 +109,11 @@ async fn download(req: HttpRequest) -> Result<impl Responder> {
 
 #[derive(Deserialize)]
 struct DownloadForm {
-    name: String,
     password: String
 }
 
-async fn download_form(form: Form<DownloadForm>) -> Result<impl Responder> {
+async fn download_form(req: HttpRequest, form: Form<DownloadForm>) -> Result<impl Responder> {
+    let name = req.path().split("/").last().ok_or(())?.to_owned();
     let form = form.into_inner();
     let password = if form.password.len() == 0 {
         None
@@ -121,7 +121,7 @@ async fn download_form(form: Form<DownloadForm>) -> Result<impl Responder> {
         Some(hash_string(form.password))
     };
 
-    Ok(load::load_file(form.name, password).await?)
+    Ok(load::load_file(name, password).await?)
 }
 
 #[actix_web::main]

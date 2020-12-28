@@ -3,28 +3,32 @@
     <head>
         <meta charset="utf-8">
         <title>Transpo</title>
+        <link rel="stylesheet" href="www/styles.css">
     </head>
     <body>
-        <div>
-            <h1>Transpo</h1>
-            <form action="/" id="upload-form" method="post" enctype="multipart/form-data" autocomplete="off">
-                <div id="file-area">
-                    Drag and drop or
-                    <!--https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js-->
-                    <button type="button" onclick="document.getElementById('file-input').click();">Select Files</button>
-                    <div id="file-previews">
-                    </div>
-                    <p>
+        <div class="ui-frame">
+            <div class="upload-pane">
+                <img class="logo" src="www/logo.png"></img>
+                <form action="/" id="upload-form" method="post" enctype="multipart/form-data" autocomplete="off">
+                    <div id="file-area" class="file-area">
+                        <span class="file-area-prompt">
+                        Drag and drop or
+                        <!--https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js-->
+                        <button type="button" onclick="document.getElementById('file-input').click();">Select Files</button>
+                        </span>
+                        <div id="file-previews">
+                        </div>
+                        <p>
                         <div id="all-files" style="display: none;">
-                            Total size:
+                            Total size: 
                             <span id="total-size"></span>
                             <button type="button" id="remove-all-files" onclick="removeAllFiles()">Remove All</button>
                         </div>
-                    </p>
-                </div>
-                <input id="file-input" multiple type="file" style="display: none;" onchange="addFiles(this.files)">
-                <!--TIME LIMIT-->
-                <p>
+                        </p>
+                    </div>
+                    <input id="file-input" multiple type="file" style="display: none;" onchange="addFiles(this.files)">
+                    <!--TIME LIMIT-->
+                    <p>
                     Time limit:
                     <input id="days" type="number" min="0" max="6" step="1" value="0" size="3">
                     <label for="days">Days</label>
@@ -32,37 +36,55 @@
                     <label for="hours">Hours</label>
                     <input id="minutes" type="number" min="0" max="59" step="1" value="30" size="3">
                     <label for="minutes">Minutes</label>
-                </p>
-                <!--DOWNLOAD LIMIT-->
-                <p>
+                    </p>
+                    <!--DOWNLOAD LIMIT-->
+                    <p>
                     <input id="enable-download-limit" type="checkbox">
                     <label for="enable-download-limit">Expire after:</label>
                     <input id="download-limit" type="number" min="1" max="999" step="1" value="5" size="5">
                     <label for="download-limit">Downloads</label>
-                </p>
-                <!--PASSWORD-->
-                <p>
+                    </p>
+                    <!--PASSWORD-->
+                    <p>
                     <input id="enable-password" type="checkbox">
                     <label for="enable-password">Password:</label>
                     <input id="password" type="text">
-                </p>
-                <p>
+                    </p>
+                    <p>
                     <input id="upload" type="submit" value="Upload">
-                </p>
-            </form>
+                    </p>
+                </form>
+            </div>
+            <div class="completed-pane">
+                <h3>Uploaded</h3>
+                <div id="upload-indicators">
+                </div>
+            </div>
         </div>
 
+        <!-- show the files added to the current upload -->
         <template id="file-preview">
             <div class="file-preview">
                 <p></p>
                 <span class="file-size"></span>
                 <span class="file-name"></span>
-                <button type="button" onclick="removePreviewAndFile(this.parentNode)">Remove</button>
+                <button class="x-button" type="button" onclick="removePreviewAndFile(this.parentNode)">×</button>
+            </div>
+        </template>
+        
+        <!-- show completed uploads -->
+        <template id="upload-status">
+            <div class="upload-status">
+                <progress class="progress-bar" value="0" max="100" style="display: none;"></progress>
+                <a href="" class="dl-link"></a>
+                <button class="copy-button" onclick="copyDownloadLink(this.parentNode)" style="display: none;">Copy</button>
+                <button class="x-button" onclick="this.parentNode.remove()" style="display: none;">×</button>
             </div>
         </template>
         
         <!-- SCRIPT -->
         <script src="www/transpo.js"></script>
         <script src="www/form.js"></script>
+        <script src="www/upload_status.js"></script>
     </body>
 </html>

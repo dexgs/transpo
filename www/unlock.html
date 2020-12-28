@@ -2,12 +2,12 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Unlock</title>
+        <title>Transpo</title>
     </head>
     <body>
         <div class="unlock-dialogue">
-            <form id="unlock-form" method="post" autocomplete="off">
-                <input id="password" type="password" autocomplete="off">
+            <form id="unlock-form" method="post" autocomplete="off" onsubmit="unlock()">
+                <input name="password" id="password" type="text" autocomplete="new-password">
                 <input id="submit" type="submit" value="Unlock">
             </form>
         </div>

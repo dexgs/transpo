@@ -1,7 +1,7 @@
 let form = document.getElementById("upload-form");
 
 form.onsubmit = function() {
-  var formData = new FormData(form);
+  var formData = new FormData();
 
   var files = document.getElementById("file-input").files;
 
@@ -37,15 +37,36 @@ form.onsubmit = function() {
   }
 
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', form.getAttribute('action'), true);
-  xhr.send(formData);
+
+  var progressIndicator = document.getElementById("upload-status").content.cloneNode(true);
+  document.getElementById("upload-indicators").appendChild(progressIndicator);
+  var children = document.getElementById("upload-indicators").children;
+  progressIndicator = children[children.length - 1];
 
   xhr.onreadystatechange = function() {
     if (xhr.readyState == 4 && xhr.status == 200) {
-      removeAllFiles();
-      console.log(xhr.responseText);
+      progressIndicator.querySelector(".progress-bar").remove();
+      var dlLink = progressIndicator.querySelector(".dl-link");
+      dlLink.href = document.URL + xhr.responseText;
+      dlLink.textContent = xhr.responseText;
+      progressIndicator.querySelector(".x-button").style = "";
+      progressIndicator.querySelector(".copy-button").style = "";
     }
   }
+  
+  if (uploadSize >= 10000000) {
+    progressIndicator.querySelector(".progress-bar").style = "";
+    xhr.upload.addEventListener("progress", function(e) {
+      if (e.lengthComputable) {
+        progressIndicator.querySelector(".progress-bar").value = (e.loaded / e.total) * 100;
+      }
+    }, false);
+  }
+
+  xhr.open('POST', document.URL, true);
+  xhr.send(formData);
+
+  removeAllFiles();
 
   return false;
 }
