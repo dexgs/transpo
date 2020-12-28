@@ -24,6 +24,6 @@ pub const MAX_DOWNLOAD_LIMIT: u32 = 999;
 pub const STORAGE_PATH: &'static str = "/mnt/vault/transpo_storage";
 
 // length of random file names. set to a length where you will
-// not run out of names. names are random ASCII, so number of
-// possible names is 128 raised to NAME_LENGTH
+// not run out of names. names are random alphanumeric ASCII, 
+// so number of possible names is 62 raised to NAME_LENGTH
 pub const NAME_LENGTH: usize = 20;
