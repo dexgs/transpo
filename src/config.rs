@@ -1,4 +1,4 @@
-pub const PORT: usize = 8080;
+pub const PORT: usize = 8787;
 
 // restrict the maximum time a file will live
 pub const MAX_DAYS: u32 = 6;
