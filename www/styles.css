@@ -28,6 +28,10 @@ button:hover, input[type=submit]:hover {
     height: 3em;
 }
 
+#unlock {
+    margin-left: 1em;
+}
+
 .body {
     display: flex;
     align-items: center;
