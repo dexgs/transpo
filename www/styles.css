@@ -146,3 +146,7 @@ h3 {
     display: inline-block;
     vertical-align: middle;
 }
+
+progress {
+    width: 100%;
+}
