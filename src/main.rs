@@ -147,5 +147,5 @@ async fn download(req: HttpRequest) -> Result<impl Responder> {
     } else {
         PathBuf::from("./www/not-found.html")
     };
-    Ok(NamedFile::open(path)?)
+    Ok(NamedFile::open(path)?.with_header("Cache-Control", "no-store"))
 }
