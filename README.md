@@ -24,7 +24,7 @@ Since it's been completed I am slowly tidying and improving it.
 Example Nginx config for transpo running on port 8080:
 ```nginx
 location /transpo/ws/ {
-  proxy_pass http://127.0.0.1:8787/ws/;
+  proxy_pass http://127.0.0.1:8080/ws/;
   proxy_http_version 1.1;
   proxy_set_header Upgrade $http_upgrade;
   proxy_set_header Connection "upgrade";
@@ -32,7 +32,7 @@ location /transpo/ws/ {
 
 location /transpo/ {
   client_max_body_size 500M;
-  proxy_pass http://127.0.0.1:8787/;
+  proxy_pass http://127.0.0.1:8080/;
 }
 
 map $http_upgrade {
