@@ -20,7 +20,10 @@ html {
 }
 
 .logo {
+  margin-top: -0.2em;
+  padding: 0;
   opacity: 90%;
+  height: 2em;
 }
 
 button, input[type=submit] {
@@ -135,10 +138,6 @@ h1, h3 {
 
 h3 {
     color: rgba(var(--fg), 0.6);
-}
-
-.logo {
-    height: 3em;
 }
 
 .ui-frame {
