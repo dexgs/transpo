@@ -1,20 +1,16 @@
 import { JSChaCha20 } from "./js-chacha20/src/jschacha20.js";
-
 const FILE_TYPES = {
   "jpg": "image/jpeg",
   "jpeg": "image/jpeg",
   "png": "image/png",
   "zip": "application/zip"
 };
-
 export async function downloadAndDecrypt(password) {
-  var index = document.URL.indexOf("#") + 1;
-  var keyString = document.URL.substring(index, document.URL.length);
-  var key = getKey(keyString);
-  var nonce = new Uint8Array(12);
-
-  var crypto = new JSChaCha20(key, nonce);
-  
+  const index = document.URL.indexOf("#") + 1;
+  const keyString = document.URL.substring(index, document.URL.length);
+  const key = getKey(keyString);
+  const nonce = new Uint8Array(12);
+  const crypto = new JSChaCha20(key, nonce); 
   await fetch(document.URL.substring(0, index), {
     method: 'POST',
     mode: 'cors',
@@ -34,8 +30,8 @@ export async function downloadAndDecrypt(password) {
           var fileName = response.headers.get("content-disposition");
           fileName = fileName.substring(fileName.indexOf("filename") + 10, fileName.length - 1);
           // https://stackoverflow.com/a/42274086
-          var file = window.URL.createObjectURL(blob);
-          var a = document.createElement("a");
+          const file = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
           a.href = file;
           if (fileName.length == 0) {
             a.download = "transpo_" + dateString() + ".zip";
@@ -59,7 +55,6 @@ export async function downloadAndDecrypt(password) {
     }
   });
 }
-
 // https://github.com/mdn/dom-examples/blob/master/streams/simple-pump/index.html
 async function decryptStream(response, crypto) {
   const reader = response.getReader();
@@ -77,7 +72,6 @@ async function decryptStream(response, crypto) {
     }
   });
 }
-
 function getKey(keyString) {
   var key = new Uint8Array(32);
   for (var i = 0; i < keyString.length / 2; i++) {
@@ -86,12 +80,10 @@ function getKey(keyString) {
   }
   return key;
 }
-
 function hexToByte(s) {
   let bytes = new TextEncoder().encode(s);
   return 16 * hexDigit(bytes[0]) + hexDigit(bytes[1]);
 }
-
 function hexDigit(n) {
   if (n >= 97) {
     return n - 87;
@@ -99,10 +91,9 @@ function hexDigit(n) {
     return n - 48;
   }
 }
-
 function dateString() {
-  var string = "";
-  var date = new Date();
+  const string = "";
+  const date = new Date();
   string += date.getFullYear();
   string += date.getMonth();
   string += date.getDate();

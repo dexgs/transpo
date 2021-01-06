@@ -82,12 +82,13 @@ async fn upload_stream(req: HttpRequest, stream: web::Payload) -> Result<HttpRes
                 .create_new(true)
                 .open(file_path)
         }).await?;
-        return ws::start(UploadWs{f: f}, &req, stream);
+        return ws::start(UploadWs{f: f, num_bytes: 0}, &req, stream);
     }
     Err(ErrorPreconditionFailed("Tried to stream to invalid dir"))
 }
 
 struct UploadWs {
+    num_bytes: usize,
     f: File
 }
 
@@ -96,9 +97,18 @@ impl Actor for UploadWs {
 }
 
 impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for UploadWs {
-    fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, _ctx: &mut Self::Context) {
+    fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
         match msg {
-            Ok(ws::Message::Binary(bin)) => {drop(self.f.write_all(&bin))},
+            Ok(ws::Message::Binary(bin)) => {
+                if let Ok(b) = self.f.write(&bin) {
+                    self.num_bytes += b;
+                    if self.num_bytes > config::MAX_UPLOAD_SIZE {
+                        ctx.close(None);
+                    }
+                } else {
+                    ctx.close(None);
+                }
+            },
             _ => {},
         };
     }
