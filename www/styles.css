@@ -20,6 +20,8 @@ html {
 }
 
 .logo {
+  position: relative;
+  bottom: 3em;
   margin-top: -0.2em;
   padding: 0;
   opacity: 90%;
