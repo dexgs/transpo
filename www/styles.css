@@ -277,3 +277,18 @@ a, a > * {
   text-align: center;
   font-size: 10pt;
 }
+
+.confused-file {
+  opacity: 70%;
+  width: 3em;
+  animation: rotation 8s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
