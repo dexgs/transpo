@@ -14,6 +14,7 @@ A simple file sharing web application that is <b><s>a total ripoff of</s></b> in
 ## Planned:
 * Togglable dark theme
 * Better error messages for the client
+* Clean up my JavaScript (this was my first real JS project)
 
 ## Installation and Setup:
 1) Make sure you have cargo installed.
