@@ -17,9 +17,11 @@ Since it's been completed I am slowly tidying and improving it.
 * Togglable dark theme
 * Better error messages for the client
 
-## Installation:
+## Installation and Setup:
 1) Make sure you have cargo installed.
-2) Clone this repository, adjust the settings in `src/config.rs` to your liking, navigate to the directory and build it with `cargo build --release` and run it with `cargo run --release`
+2) Clone this repository and navigate to its directory.
+3) Adjust the settings in `src/config.rs` to your liking.
+4) Build with `cargo build --release` and run with `cargo run --release`.
 
 Example Nginx config for transpo running on port 8080:
 ```nginx
