@@ -20,6 +20,7 @@ html {
 }
 
 .logo {
+  margin-top: -0.2em;
   padding: 0;
   opacity: 90%;
   height: 2em;
