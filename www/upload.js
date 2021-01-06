@@ -3,7 +3,7 @@ const { Reader, Writer } = window.conflux;
 
 export function upload(name, files) {
 
-  var ws = new WebSocket("ws://" + document.location.host + "/ws/" + name);
+  var ws = new WebSocket("wss://" + document.location.host + "/ws/" + name);
 
   ws.addEventListener('open', function (event) {
     zipEncryptAndSend(files, ws, name);
