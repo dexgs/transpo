@@ -5,14 +5,8 @@ pub const MAX_DAYS: u32 = 6;
 pub const MAX_HOURS: u32 = 23;
 pub const MAX_MINUTES: u32 = 59;
 
-// will be prepended to the names of zip files served by transpo
-pub const ZIP_PREFIX: &'static str = "transpo";
-
 // 500MB
 pub const MAX_UPLOAD_SIZE: usize = 500000000;
-
-// single file uploads larger than this amount will be zipped
-pub const COMPRESSION_THRESHOLD: usize = 500000000;
 
 // 5GB
 pub const MAX_STORAGE_CAPACITY: usize = 5000000000;

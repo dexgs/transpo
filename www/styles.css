@@ -1,11 +1,32 @@
+:root {
+  --bg: 254, 254, 254;
+  --fg: 0, 5, 36;
+  /*--bg: 30, 30, 30;
+  --fg: 254, 254, 254;*/
+  --accent: 66, 135, 245;
+  --accent-fg: #edf5ff;
+  --button: 255, 205, 97;
+  --button-fg: 51, 18, 4;
+}
+
 * {
     font-family: sans-serif;
     font-size-adjust: 0.47;
+    color: rgb(var(--fg));
+}
+
+html {
+    background: rgb(var(--bg));
+}
+
+.logo {
+  opacity: 90%;
 }
 
 button, input[type=submit] {
     font-weight: bold;
-    background: #ffcd61;
+    color: rgb(var(--button-fg));
+    background: rgba(var(--button), 0.9);
     border: none;
     border-radius: 0.3em;
     padding: 0.5em 1em;
@@ -14,12 +35,18 @@ button, input[type=submit] {
 }
 
 input[type=number], input[type=text] {
+    opacity: 80%;
+    color: rgba(var(--fg), 2);
     background: transparent;
     padding: 0.8em;
     padding-right: 0.3em;
     border-radius: 0.3em;
-    border: 0.1em solid #ccc;
+    border: 0.1em solid rgba(var(--fg), 0.2);
     font-size: 10pt;
+}
+
+input[type=checkbox] {
+    opacity: 80%;
 }
 
 #password {
@@ -28,15 +55,29 @@ input[type=number], input[type=text] {
 }
 
 input[type=number]:focus, input[type=text]:focus {
-    border: 0.1em solid #4287f5;
+    border: 0.1em solid rgb(var(--accent));
 }
 
-button:hover, input[type=submit]:hover {
-    filter: brightness(110%);
+button:hover:enabled, input[type=submit]:hover:enabled {
+    filter: brightness(105%);
 }
 
-button:active, input[type=submit]:active {
-    filter: brightness(90%);
+button.copy-button:hover {
+  filter: contrast(20%);
+}
+
+button:not(.x-button):enabled:active, input[type=submit]:active:enabled {
+    transform: translateY(0.14em);
+}
+
+.disabled-button:disabled {
+    opacity: 30%;
+}
+
+#upload:disabled {
+  opacity: 100%;
+  color: rgba(var(--button-fg), 0.3);
+  background: rgba(var(--button), 0.3);
 }
 
 .upload-settings > p {
@@ -58,13 +99,25 @@ button:active, input[type=submit]:active {
 
 #remove-all-files {
     margin-left: 1em;
-    color: #edf5ff;
-    background: #4287f5;
+    color: var(--accent-fg);
+    background: rgb(var(--accent));
 }
 
 #upload {
     width: 100%;
     height: 3em;
+}
+
+#progress-bar {
+  display: block;
+  width: 20%;
+  height: 0.4em;
+  border-radius: 0.2em;
+  position: relative;
+  top: 0.6em;
+  margin: 0 -0.5em;
+  margin-top: -0.6em;
+  background: rgba(var(--button), 0.8);
 }
 
 #unlock {
@@ -81,7 +134,7 @@ h1, h3 {
 }
 
 h3 {
-    color: #555;
+    color: rgba(var(--fg), 0.6);
 }
 
 .logo {
@@ -91,13 +144,13 @@ h3 {
 .ui-frame {
     /*max-width: 50em;*/
     width: 54.6em;
-    max-width: 90%;
+    max-width: 95%;
     margin: 0 auto;
-    margin-top: 12%;
-    border: solid 0.1em #ccc;
+    margin-top: 8%;
+    border: solid 0.1em rgba(var(--fg), 0.2);
     border-radius: 0.3em;
     padding: 0.3em;
-    overflow: auto;
+    overflow: show;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -111,22 +164,31 @@ h3 {
 .upload-pane {
     align-self: center;
     width: 33em;
-    padding-bottom: 0;
+    padding: 0;
 }
 
 .completed-pane {
     padding: 0.5em;
-    background: #eee;
+    background: rgba(var(--fg), 0.07);
     border-radius: 0.3em;
     flex-grow: 2;
     width: 17em;
-    max-width: 33em;
+    max-width: 32em;
+}
+
+.upload-status {
+    padding-bottom: 0.3em;
+    vertical-align: middle;
+}
+
+.upload-status > .x-button {
+    margin-top: 0.2em;
 }
 
 .file-area {
     min-height: 10em;
-    background: #edf5ff;
-    border: dashed 3px #4287f5;
+    background: rgba(var(--accent), 0.1);
+    border: dashed 3px rgb(var(--accent));
     border-radius: 0.3em;
     padding: 0 0.5em;
     padding-bottom: 1.5em;
@@ -151,29 +213,48 @@ h3 {
 }
 
 .x-button {
+    padding: 0.1em;
     height: auto;
-    padding: 0;
     margin-right: 0.4em;
     font-size: 12pt;
     background: none;
     border: none;
     appearance: none;
     float: right;
+    color: rgb(var(--fg));
 }
 
-.file-previews {
+.file-area .x-button {
+    padding: 0;
+}
+
+#file-previews {
+    margin-left: -0.1em;
+    margin-right: 0.3em;
+    direction: rtl;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--accent), 0.4) transparent;
+    scrollbar-radius: 0.2em;
+    overflow-y: auto;
+    height: 10em;
     margin-top: 0;
     padding-top: 0;
 }
 
 .copy-button {
+    color: rgb(var(--fg));
     margin-right: 0.5em;
-    background: #bebebe;
+    background: rgba(var(--fg), 0.2);
 }
 
 .file-preview {
+    overflow: hidden;
+    height: 1.2em;
+    direction: ltr;
     margin: 0;
-    background: #d9eaff;
+    margin-left: 0.4em;
+    margin-bottom: 0.3em;
+    background: rgba(var(--accent), 0.2);
     border-radius: 0.2em;
     padding-left: 0.2em;
 }
@@ -186,6 +267,14 @@ h3 {
     vertical-align: middle;
 }
 
-progress {
-    width: 100%;
+a, a > * {
+  font-weight: bold;
+  color: rgb(var(--accent));
+  text-decoration-thickness: 0.1em;
+}
+
+.fine-print {
+  color: rgba(var(--fg), 0.5);
+  text-align: center;
+  font-size: 10pt;
 }

@@ -11,12 +11,12 @@
         <div class="ui-frame">
             <div class="upload-pane">
                 <img class="logo" src="www/logo.png"></img>
-                <form action="/" id="upload-form" method="post" enctype="multipart/form-data" autocomplete="off">
+                <form id="upload-form" autocomplete="off">
                     <div id="file-area" class="file-area">
                         <span class="file-area-prompt">
                         Drag and drop or
                         <!--https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js-->
-                        <button type="button" onclick="document.getElementById('file-input').click();">Select Files</button>
+                        <button id="select-files" type="button" onclick="document.getElementById('file-input').click();">Select Files</button>
                         </span>
                         <div id="file-previews">
                         </div>
@@ -53,7 +53,10 @@
                     <label for="enable-password">Password:</label>
                     <input id="password" type="text">
                     </p>
-                    <input id="upload" type="submit" value="Upload">
+                    <button id="upload" type="submit" form="upload-form" value="Upload">
+                        Upload
+                        <div id="progress-bar" style="display: none"></div>
+                    </button>
                     </div>
                 </form>
             </div>
@@ -77,16 +80,27 @@
         <!-- show completed uploads -->
         <template id="upload-status">
             <div class="upload-status">
-                <progress class="progress-bar" value="0" max="100" style="display: none;"></progress>
-                <button class="copy-button" onclick="copyDownloadLink(this.parentNode)" style="display: none;">Copy</button>
-                <a href="" class="dl-link"></a>
-                <button class="x-button" onclick="this.parentNode.remove()" style="display: none;">×</button>
+                <button class="copy-button" onclick="copyDownloadLink(this.parentNode)">Copy URL</button>
+                <a href="" class="dl-link">
+                    <span class="upload-name"></span>
+                    <span class="upload-extension"></span>
+                    <span class="upload-quantity"></span>
+                </a>
+                <button class="x-button" onclick="this.parentNode.remove()">×</button>
+            </div>
+        </template>
+
+        <template id="error-template">
+            <div class="error-status">
+                <span class="error-message"></span>
             </div>
         </template>
         
         <!-- SCRIPT -->
+        <script src="www/js-chacha20/src/jschacha20.js" type="module"></script>
+        <script src="www/conflux/conflux.js"></script>
+        <script src="www/upload.js" type="module"></script>
         <script src="www/transpo.js"></script>
-        <script src="www/form.js"></script>
-        <script src="www/upload_status.js"></script>
+        <script src="www/form.js" type="module"></script>
     </body>
 </html>
