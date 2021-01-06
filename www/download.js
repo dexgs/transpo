@@ -3,7 +3,13 @@ const FILE_TYPES = {
   "jpg": "image/jpeg",
   "jpeg": "image/jpeg",
   "png": "image/png",
-  "zip": "application/zip"
+  "zip": "application/zip",
+  "gif": "image/gif",
+  "mp3": "audio/mpeg",
+  "pdf": "application/pdf",
+  "rar": "application/vnd.rar",
+  "txt": "text/plain",
+  "avi": "video/x-msvideo",
 };
 export async function downloadAndDecrypt(password) {
   const index = document.URL.indexOf("#") + 1;
@@ -13,20 +19,16 @@ export async function downloadAndDecrypt(password) {
   const crypto = new JSChaCha20(key, nonce); 
   await fetch(document.URL.substring(0, index), {
     method: 'POST',
-    mode: 'cors',
+    //mode: 'cors',
     cache: 'no-cache',
-    credentials: 'same-origin',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    referrerPolicy: 'no-referrer',
+    //credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    //referrerPolicy: 'no-referrer',
     body: "password=" + encodeURIComponent(password)
   }).then(response => {
     if (response.status == 200) {
-      decryptStream(response.body, crypto)
-        .then(rs => new Response(rs))
-        .then(response => response.blob())
-        .then(blob => {
+      decryptStream(response.body, crypto).then(rs => new Response(rs))
+        .then(response => response.blob()).then(blob => {
           var fileName = response.headers.get("content-disposition");
           fileName = fileName.substring(fileName.indexOf("filename") + 10, fileName.length - 1);
           // https://stackoverflow.com/a/42274086
@@ -62,9 +64,7 @@ async function decryptStream(response, crypto) {
     async start(controller) {
       while (true) {
         const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
+        if (done) { break; }
         controller.enqueue(crypto.decrypt(value));
       }
       controller.close();
@@ -73,15 +73,15 @@ async function decryptStream(response, crypto) {
   });
 }
 function getKey(keyString) {
-  var key = new Uint8Array(32);
+  const key = new Uint8Array(32);
   for (var i = 0; i < keyString.length / 2; i++) {
-    var index = i * 2;
+    const index = i * 2;
     key[i] = hexToByte(keyString.substring(index, index + 2));
   }
   return key;
 }
 function hexToByte(s) {
-  let bytes = new TextEncoder().encode(s);
+  const bytes = new TextEncoder().encode(s);
   return 16 * hexDigit(bytes[0]) + hexDigit(bytes[1]);
 }
 function hexDigit(n) {
