@@ -21,7 +21,7 @@ html {
 
 .logo {
   position: relative;
-  bottom: 2em;
+  bottom: 1.4em;
   margin-top: -0.2em;
   padding: 0;
   opacity: 90%;
@@ -163,6 +163,7 @@ h3 {
 }
 
 .upload-pane {
+    margin-top: -1.4em;
     align-self: center;
     width: 33em;
     padding: 0;
