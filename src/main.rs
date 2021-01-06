@@ -1,18 +1,16 @@
 use serde::Deserialize;
-
+use actix::{Actor, StreamHandler};
 use actix_files::{NamedFile, Files};
 use actix_web::{web::{self, Form}, App, HttpServer, HttpRequest, HttpResponse, Responder, Result};
-use actix_multipart::{Multipart, Field};
 use actix_http::error::{ErrorPreconditionFailed, ErrorInsufficientStorage};
-use futures::{TryStreamExt, StreamExt};
-
+use actix_web_actors::ws;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::Hasher;
 use std::path::PathBuf;
-use std::str::FromStr;
-
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::io::Write;
 use fs_extra;
-
 mod store;
 mod delete_worker;
 mod time;
@@ -21,92 +19,41 @@ mod load;
 mod fs;
 mod expiring_file;
 
-async fn form_response(payload: Multipart) -> impl Responder {
-    match parse_form(payload).await {
-        Ok(response) => response,
-        Err(e) => e.into()
-    }
+// UPLOADING
+#[derive(Deserialize)]
+struct UploadForm {
+    days: u32,
+    hours: u32,
+    minutes: u32,
+    download_limit: u32,
+    password: String,
+    file_name: String,
 }
 
-pub struct UploadConfig {
-    pub days: u32,
-    pub hours: u32,
-    pub minutes: u32,
-    pub download_limit: Option<u32>,
-    pub password_hash: Option<u64>
-}
-
-async fn parse_form(mut payload: Multipart) -> Result<HttpResponse> {
+async fn upload_form(_req: HttpRequest, form: Form<UploadForm>) -> Result<HttpResponse> {
     if fs_extra::dir::get_size(PathBuf::from(config::STORAGE_PATH)).ok().ok_or(())? as usize + config::MAX_UPLOAD_SIZE > config::MAX_STORAGE_CAPACITY {
-        return Err(ErrorInsufficientStorage("The server has reached capacity"));
+        return Err(ErrorInsufficientStorage("The server has reached its storage limit."));
     }
-    // expecting this order: days, hours, minutes, download limit, password, files
-    let days: u32 = parse_next_field(&mut payload).await?;
-    let hours: u32 = parse_next_field(&mut payload).await?;
-    let minutes: u32 = parse_next_field(&mut payload).await?;
-    
-    if days == 0 && hours == 0 && minutes == 0 {
-        return Err(ErrorPreconditionFailed("File must live at least 1 minute"));
+    if form.days == 0 && form.hours == 0 && form.minutes == 0 {
+        return Err(ErrorPreconditionFailed("File must live at least 1 minute."));
     }
-
-    if minutes > config::MAX_MINUTES || hours > config::MAX_HOURS || days > config::MAX_DAYS {
+    if form.minutes > config::MAX_MINUTES || form.hours > config::MAX_HOURS || form.days > config::MAX_DAYS {
         return Err(ErrorPreconditionFailed(
                 format!("Maximum allowed time is {} days, {} hours and {} minutes.",
                         config::MAX_DAYS, config::MAX_HOURS, config::MAX_MINUTES)));
     }
-    
-    let download_limit: u32 = parse_next_field(&mut payload).await?;
-
-    if download_limit > config::MAX_DOWNLOAD_LIMIT {
+    if form.download_limit > config::MAX_DOWNLOAD_LIMIT {
         return Err(ErrorPreconditionFailed(
                 format!("Download limit can be at most {}.", config::MAX_DOWNLOAD_LIMIT)));
     }
 
-    let password: String = parse_next_field(&mut payload).await.unwrap_or(String::new());
+    let download_limit = if form.download_limit != 0 {Some(form.download_limit)} else {None};
+    let password_hash = if form.password.len() != 0 {Some(hash_string(&form.password))} else {None};
 
-    let upload_config = UploadConfig{
-        days: days,
-        hours: hours,
-        minutes: minutes,
-        download_limit: if download_limit != 0 {Some(download_limit)} else {None},
-        password_hash: if password.len() != 0 {Some(hash_string(password))} else {None}
-    };
-
-    store::store_files(upload_config, payload).await
+    store::write_metadata(form.days, form.hours, form.minutes, download_limit, password_hash, form.file_name.clone())
 }
 
-fn hash_string(string: String) -> u64 {
-    let mut hasher = DefaultHasher::new();
-    hasher.write(string.as_bytes());
-    hasher.finish()
-}
-
-async fn parse_next_field<T>(payload: &mut Multipart) -> Result<T>
-where T: FromStr
-{
-    if let Some(field) = parse_field(payload.try_next().await?).await {
-        return Ok(field)
-    }
-    Err(ErrorPreconditionFailed("Couldn't parse value from form entry"))
-}
-
-// take only first chunk since all the non-file form entries should not be large
-async fn parse_field<T>(field: Option<Field>) -> Option<T> 
-where T: FromStr
-{
-    String::from_utf8(field?.next().await?.ok()?.to_vec()).ok()?.parse::<T>().ok()
-}
-
-async fn index(_req: HttpRequest) -> Result<NamedFile> {
-    let path = PathBuf::from("./www/index.html");
-    Ok(NamedFile::open(path)?)
-}
-
-async fn download(req: HttpRequest) -> Result<impl Responder> {
-    let name = String::from(&req.match_info()[0]);
-    Ok(load::load_file(name, None).await?)
-}
-
+// DOWNLOADING
 #[derive(Deserialize)]
 struct DownloadForm {
     password: String
@@ -114,14 +61,47 @@ struct DownloadForm {
 
 async fn download_form(req: HttpRequest, form: Form<DownloadForm>) -> Result<impl Responder> {
     let name = req.path().split("/").last().ok_or(())?.to_owned();
-    let form = form.into_inner();
     let password = if form.password.len() == 0 {
         None
     } else {
-        Some(hash_string(form.password))
+        Some(hash_string(&form.password))
     };
 
     Ok(load::load_file(name, password).await?)
+}
+
+// UPLOAD STREAM
+async fn upload_stream(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse> {
+    let name = req.path().split("/").last().ok_or(())?.to_owned();
+    let dir = PathBuf::from(config::STORAGE_PATH).join(&name);
+    let file_path = dir.join("upload");
+    if dir.exists() && !file_path.exists() {
+        let f = web::block(move || {
+            OpenOptions::new()
+                .append(true)
+                .create_new(true)
+                .open(file_path)
+        }).await?;
+        return ws::start(UploadWs{f: f}, &req, stream);
+    }
+    Err(ErrorPreconditionFailed("Tried to stream to invalid dir"))
+}
+
+struct UploadWs {
+    f: File
+}
+
+impl Actor for UploadWs {
+    type Context = ws::WebsocketContext<Self>;
+}
+
+impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for UploadWs {
+    fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, _ctx: &mut Self::Context) {
+        match msg {
+            Ok(ws::Message::Binary(bin)) => {drop(self.f.write_all(&bin))},
+            _ => {},
+        };
+    }
 }
 
 #[actix_web::main]
@@ -133,11 +113,39 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .route("/{name}", web::get().to(download))
             .route("/{name}", web::post().to(download_form))
-            .route("/", web::post().to(form_response))
+            .route("/", web::post().to(upload_form))
             .route("/", web::get().to(index))
+            .route("/ws/{name}", web::get().to(upload_stream))
             .service(Files::new("www", "./www"))
     })
     .bind(format!("127.0.0.1:{}", config::PORT))?
     .run()
     .await
+}
+
+
+fn hash_string(string: &String) -> u64 {
+    let mut hasher = DefaultHasher::new();
+    hasher.write(string.as_bytes());
+    hasher.finish()
+}
+
+async fn index(_req: HttpRequest) -> Result<NamedFile> {
+    let path = PathBuf::from("./www/index.html");
+    Ok(NamedFile::open(path)?)
+}
+
+async fn download(req: HttpRequest) -> Result<impl Responder> {
+    let name = req.path().split("/").last().ok_or(())?.to_owned();
+    let file_dir = PathBuf::from(config::STORAGE_PATH).join(&name);
+    let path = if file_dir.exists() {
+        if file_dir.join("password_hash").exists() {
+            PathBuf::from("./www/unlock.html")
+        } else {
+            PathBuf::from("./www/download.html")
+        }
+    } else {
+        PathBuf::from("./www/not-found.html")
+    };
+    Ok(NamedFile::open(path)?)
 }

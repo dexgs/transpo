@@ -2,6 +2,7 @@ use actix_files::NamedFile;
 use actix_web::{HttpRequest, Result, Responder, Error};
 use actix_web::http::header::ContentDisposition;
 use actix_web::http::HeaderValue;
+use actix_http::error::{ErrorUnauthorized, ErrorNotFound};
 
 use super::config;
 use super::time;
@@ -50,12 +51,14 @@ pub async fn load_file(name: String, password_hash: Option<u64>) -> Result<FileR
     } else if file_password != password_hash {
         return password_protected();
     }
-
     // everything succeeded
 
-    let mut files = std::fs::read_dir(dir.join("file"))?;
-    let file = NamedFile::open(files.next().ok_or(())??.path())?;
-    let file_name = String::from(file.path().file_name().ok_or(())?.to_str().ok_or(())?);
+    let file = NamedFile::open(dir.join("upload"))?;
+    let file_name = if let Some(name) = fs::read_file(dir.join("file_name")).await {
+        name
+    } else {
+        String::new()
+    };
     // must be set, since default is inline for text, image and video
     let file = file.set_content_disposition(ContentDisposition::from_raw(
         &HeaderValue::from_str(&format!("attachment; filename=\"{}\"", file_name))?)?);
@@ -67,11 +70,9 @@ pub async fn load_file(name: String, password_hash: Option<u64>) -> Result<FileR
 }
 
 fn not_found() -> Result<FileResponse> {
-    let path = PathBuf::from("./www/not-found.html");
-    Ok(FileResponse::Named(NamedFile::open(path)?))
+    Err(ErrorNotFound("Not found"))
 }
 
 fn password_protected() -> Result<FileResponse> {
-    let path = PathBuf::from("./www/unlock.html");
-    Ok(FileResponse::Named(NamedFile::open(path)?))
+    Err(ErrorUnauthorized("Incorrect Password"))
 }

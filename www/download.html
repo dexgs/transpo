@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Transpo | Download</title>
+        <link rel="stylesheet" href="www/styles.css">
+    </head>
+    <body>
+        <div class="fine-print" style="margin-top: 8%">
+            Please keep this tab open while downloading. <br/>
+            The download is decrypted by a script on this page.
+        </div>
+        <script src="www/download.js" type="module"></script>
+        <script type="module">
+            import { downloadAndDecrypt } from "../www/download.js";
+            downloadAndDecrypt("");
+        </script>
+    </body>
+</html>

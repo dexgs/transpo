@@ -5,6 +5,17 @@ let fileMap = new Map();
 let previewTemplate = document.getElementById("file-preview");
 let fileInput = document.getElementById("file-input");
 
+let removeAllFilesButton = document.getElementById("remove-all-files");
+let uploadButton = document.getElementById("upload");
+let selectFilesButton = document.getElementById("select-files");
+
+let uploadTemplate = document.getElementById("upload-status");
+let uploadIndicators = document.getElementById("upload-indicators");
+
+let disablableElements = [removeAllFilesButton, uploadButton, selectFilesButton];
+
+let progressBar = document.getElementById("progress-bar");
+
 let uploadSize = 0;
 
 fileArea.addEventListener("drop", dropFiles, false);
@@ -84,4 +95,87 @@ function sizeString(numBytes) {
     } else {
         return "Big";
     }
+}
+
+function setUiEnabled(state) {
+  for (var i = 0; i < disablableElements.length; i++) {
+    disablableElements[i].disabled = !state;
+  }
+
+  var style = ""
+  if (!state) {
+    style = "display: none"
+  }
+  document.getElementById("file-previews").querySelectorAll(".x-button").forEach(function(button) {
+    button.style = style;
+  });
+}
+
+function setDisabledClass(state) {
+  if (state) {
+    for (var i = 0; i < disablableElements.length; i++) {
+      disablableElements[i].classList.add("disabled-button");
+    }
+  } else {
+    for (var i = 0; i < disablableElements.length; i++) {
+      disablableElements[i].classList.remove("disabled-button");
+    }
+  }
+}
+
+const MAX_LENGTH = 18;
+
+function addUploadPreview(fileNames, uploadURL, keyString) {
+  var preview = uploadTemplate.content.cloneNode(true);
+
+  var maxLength = MAX_LENGTH;
+
+  if (fileNames.length > 1) {
+    var quantity = "+" + (fileNames.length - 1) + " more";
+    maxLength -= quantity.length;
+    preview.querySelector(".upload-quantity").textContent = quantity;
+  }
+
+  var fileName = fileNames[0];
+  var index = fileName.lastIndexOf(".");
+  if (index != -1) {
+    var fileExt = fileName.substring(index, fileName.length).substring(0, 5);
+    var fileStem = fileName.substring(0, index);
+    if (fileStem.length > maxLength) {
+      fileStem = fileStem.substring(0, maxLength) + "… ";
+    }
+    preview.querySelector(".upload-name").textContent = fileStem;
+    preview.querySelector(".upload-extension").textContent = fileExt;
+  } else {
+    preview.querySelector(".upload-name").textContent = fileName;
+  }
+
+  if (fileNames.length > 1) {
+    preview.querySelector(".upload-quantity").textContent = "+" + (fileNames.length - 1) + " more";
+  }
+
+  var linkTitle = fileName;
+  for (var i = 1; i < fileNames.length; i++) {
+    linkTitle += "\n" + fileNames[i];
+  }
+  
+  var link = preview.querySelector("a");
+  link.title = linkTitle;
+  link.href = document.URL + uploadURL + "#" + keyString;
+
+  uploadIndicators.appendChild(preview);
+}
+
+function setProgress(progress, isDone) {
+  progressBar.style.width = progress + "%";
+  if (isDone) {
+    progressBar.style.display = "none";
+  } else {
+    progressBar.style.display = "block";
+  }
+}
+
+function copyDownloadLink(preview) {
+  var link = preview.querySelector("a");
+  navigator.clipboard.writeText(link.href);
 }
