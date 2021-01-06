@@ -283,7 +283,7 @@ a, a > * {
   width: 3em;
   animation: rotation 8s infinite linear;
 }
-
+/* https://flaviocopes.com/rotate-image/ */
 @keyframes rotation {
   from {
     transform: rotate(0deg);
