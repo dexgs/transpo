@@ -92,7 +92,7 @@ function hexDigit(n) {
   }
 }
 function dateString() {
-  const string = "";
+  let string = "";
   const date = new Date();
   string += date.getFullYear();
   string += date.getMonth();
