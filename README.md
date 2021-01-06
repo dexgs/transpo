@@ -22,7 +22,7 @@ Since it's been completed I am slowly tidying and improving it.
 2) Clone this repository and navigate to its directory.
 3) Adjust the settings in `src/config.rs` to your liking.
 4) Build with `cargo build --release` and run with `cargo run --release`.
-5) After getting it to work, you should probably configure it to run as a service.
+5) After getting it to work, you should probably set up your OS's init system to run transpo as a service.
 
 Example Nginx config for transpo running on port 8080:
 ```nginx
