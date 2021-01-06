@@ -1,5 +1,5 @@
 # transpo
-A simple file sharing web application that is <b><s>A complete ripoff of</s></b> Inspired by the late 
+A simple file sharing web application that is <b><s>a complete ripoff of</s></b> inspired by the late 
 [Firefox Send](https://github.com/mozilla/send) which I miss very dearly.
 
 ![screenshot of frontend](screenshot.png)
