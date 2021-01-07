@@ -22,8 +22,8 @@ impl ExpiringFile {
     }
 
     pub fn into_response(self, req: &HttpRequest) -> Result<HttpResponse, Error> {
-        // file is at `storage/URL/file/here` and we want to remove `storage/URL/`
-        let path = PathBuf::from(self.file.path().parent().unwrap().parent().unwrap());
+        // file is at `storage/URL/file` and we want to remove `storage/URL/`
+        let path = PathBuf::from(self.file.path().parent().unwrap());
         let mut resp = self.file.into_response(req)?;
         let stream = resp.take_body();
         let wrapper = StreamWrapper::new(path, stream);
