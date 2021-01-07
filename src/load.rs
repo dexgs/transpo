@@ -28,7 +28,7 @@ impl Responder for FileResponse {
     }
 }
 
-pub async fn download_limit_exceeded(dir: PathBuf) {
+pub async fn download_limit_exceeded(dir: PathBuf) -> bool {
     let remaining_downloads: Option<u32> = fs::read_file(dir.join("remaining_downloads")).await;
     if let Some(remaining_downloads) = remaining_downloads {
         if remaining_downloads == 0 {
