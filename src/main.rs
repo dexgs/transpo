@@ -148,7 +148,7 @@ async fn index(_req: HttpRequest) -> Result<NamedFile> {
 async fn download(req: HttpRequest) -> Result<impl Responder> {
     let name = req.path().split("/").last().ok_or(())?.to_owned();
     let file_dir = PathBuf::from(config::STORAGE_PATH).join(&name);
-    let path = if file_dir.exists() && load::download_limit_exceeded(file_dir).await {
+    let path = if file_dir.exists() && load::download_limit_exceeded(file_dir.clone()).await {
         if file_dir.join("password_hash").exists() {
             PathBuf::from("./www/unlock.html")
         } else {
