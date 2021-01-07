@@ -1,6 +1,6 @@
 function setTheme(theme) {
   window.localStorage.setItem("theme", theme);
-  changeTheme(theme);
+  loadTheme(theme);
 }
 
 function loadTheme(theme) {
