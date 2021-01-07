@@ -9,7 +9,7 @@ A simple file sharing web application that is <b><s>a total ripoff of</s></b> in
 * Option to limit the number of times a file can be downloaded before it expires
 * Option to password protect files
 * Compresses multi-file uploads
-* Client-side encryption and decryption of files
+* Client-side encryption and decryption of files (not bullet-proof, but a whole lot better than nothing)
 
 ## Planned:
 * Togglable dark theme
