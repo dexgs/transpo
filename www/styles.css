@@ -113,7 +113,7 @@ button:not(.x-button):enabled:active, input[type=submit]:active:enabled {
 }
 
 #unlock {
-    margin-left: 0.6em;
+    margin-left: 0.4em;
 }
 
 .body {
