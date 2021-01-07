@@ -15,8 +15,7 @@ async function zipEncryptAndSend(files, ws, name) {
   var nonce = new Uint8Array(12);
 
   var crypto = new JSChaCha20(key, nonce);
-
-  var totalSize = 0;
+  
   var uploaded = 0;
 
   var fileNames = new Array(files.length);
@@ -55,7 +54,7 @@ async function zipEncryptAndSend(files, ws, name) {
           }
           if (totalSize > 2000000) {
             uploaded += value.length;
-            setProgress(100 * uploaded / totalSize, false);
+            setProgress(100 * uploaded / uploadSize, false);
           }
           ws.send(crypto.encrypt(value));
           pump();
