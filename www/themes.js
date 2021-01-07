@@ -8,7 +8,7 @@ function loadTheme(theme) {
 }
 
 function loadStoredTheme() {
-  const theme = windo.localStorage.getItem("theme");
+  const theme = window.localStorage.getItem("theme");
   if (theme != undefined) {
     loadTheme(theme);
   }
