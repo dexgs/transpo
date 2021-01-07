@@ -28,6 +28,16 @@ impl Responder for FileResponse {
     }
 }
 
+pub async fn download_limit_exceeded(dir: PathBuf) {
+    let remaining_downloads: Option<u32> = fs::read_file(dir.join("remaining_downloads")).await;
+    if let Some(remaining_downloads) = remaining_downloads {
+        if remaining_downloads == 0 {
+            return true;
+        }
+    }
+    false
+}
+
 pub async fn load_file(name: String, password_hash: Option<u64>) -> Result<FileResponse> {
     let dir = PathBuf::from(config::STORAGE_PATH).join(name);
 
@@ -37,19 +47,14 @@ pub async fn load_file(name: String, password_hash: Option<u64>) -> Result<FileR
     }
 
     let file_password: Option<u64> = fs::read_file(dir.join("password_hash")).await;
+    if file_password != password_hash {
+        return password_protected();
+    }
 
+    // downloads may be exhausted, but file can still be up if it's currently being downloaded
     let remaining_downloads: Option<u32> = fs::read_file(dir.join("remaining_downloads")).await;
     if let Some(remaining_downloads) = remaining_downloads {
-        // downloads may be exhausted, but file can still be up if it's currently being downloaded
-        if remaining_downloads == 0 {
-            return not_found();
-        } else if file_password == password_hash {
-            fs::write_file(dir.join("remaining_downloads"), remaining_downloads - 1).await;
-        } else {
-            return password_protected();
-        }
-    } else if file_password != password_hash {
-        return password_protected();
+        fs::write_file(dir.join("remaining_downloads"), remaining_downloads - 1).await;
     }
     // everything succeeded
 
