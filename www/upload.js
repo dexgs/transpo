@@ -52,7 +52,7 @@ async function zipEncryptAndSend(files, ws, name) {
             setProgress(100, true);
             return;
           }
-          if (totalSize > 2000000) {
+          if (uploadSize > 2000000) {
             uploaded += value.length;
             setProgress(100 * uploaded / uploadSize, false);
           }
