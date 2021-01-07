@@ -10,3 +10,7 @@
 .logo {
   filter: saturate(0%) brightness(800%);
 }
+
+.confused-file {
+  filter: brightness(800%);
+}
