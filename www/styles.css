@@ -1,13 +1,11 @@
-:root {
+/*:root {
   --bg: 254, 254, 254;
   --fg: 0, 5, 36;
-  /*--bg: 30, 30, 30;
-  --fg: 254, 254, 254;*/
   --accent: 66, 135, 245;
   --accent-fg: #edf5ff;
   --button: 255, 205, 97;
   --button-fg: 51, 18, 4;
-}
+}*/
 
 * {
     font-family: sans-serif;
