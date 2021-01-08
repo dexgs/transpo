@@ -287,3 +287,48 @@ a, a > * {
     transform: rotate(359deg);
   }
 }
+
+.theme-select-box {
+  position: relative;
+  top: 2em;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  height: 0;
+  margin: 0 !important;
+  margin-right: -0.8em !important;
+  align-items: center;
+  opacity: 30%;
+}
+
+.theme-select-box:hover {
+  opacity: 70%;
+}
+
+.theme-select-box > label {
+  font-size: 10pt;
+}
+
+.theme-select-box::after {
+  font-size: 6pt;
+  content: "▼";
+  width: 0;
+  position: relative;
+  right: 1.6em;
+}
+
+#theme-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  margin-left: 1em;
+  background: none;
+  border: 0.1em solid rgba(var(--fg), 0.3);
+  border-radius: 0.3em;
+  padding: 0.2em;
+  padding-right: 1em;
+  font-size: 10pt;
+}
+
+#theme-select::after {
+  content: "click";
+}
