@@ -10,9 +10,9 @@ A simple file sharing web application that is <b><s>a total ripoff of</s></b> in
 * Option to password protect files
 * Compresses multi-file uploads
 * Client-side encryption and decryption of files (not bullet-proof, but a whole lot better than nothing)
+* Themes (light and dark are inculded in this repository, but adding your own is trivial)
 
-## Planned:
-* Togglable dark theme
+## TO-DO:
 * Better error messages for the client
 * Clean up my JavaScript (this was my first real JS project)
 
