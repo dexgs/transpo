@@ -8,12 +8,15 @@ html {
     background: rgb(var(--bg));
 }
 
+.logo {
+  height: 2em;
+  margin-top: -0.2em;
+  opacity: 90%;
+  padding: 0;
+}
+
 .logo::before {
   content: url(www/logo.png);
-  margin-top: -0.2em;
-  padding: 0;
-  opacity: 90%;
-  height: 2em;
 }
 
 button, input[type=submit] {
