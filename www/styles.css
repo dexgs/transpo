@@ -8,7 +8,7 @@ html {
     background: rgb(var(--bg));
 }
 
-.logo {
+.logo::before {
   content: url(logo.png);
   height: 2em;
   margin-top: -0.2em;
