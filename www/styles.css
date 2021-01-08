@@ -9,6 +9,7 @@ html {
 }
 
 .logo::before {
+  display: block;
   content: url(logo.png);
   height: 2em;
   margin-top: -0.2em;
