@@ -11,7 +11,9 @@ function loadStoredTheme() {
   const theme = window.localStorage.getItem("theme");
   if (theme != undefined) {
     loadTheme(theme);
-    updateDropdown(theme);
+    window.addEventListener("load", function(e) {
+	updateDropdown(theme);
+    });
   }
 }
 

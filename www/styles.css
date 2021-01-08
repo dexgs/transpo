@@ -33,6 +33,7 @@ button, input[type=submit] {
 }
 
 input[type=number], input[type=text] {
+    -moz-appearance: textfield;
     opacity: 80%;
     color: rgba(var(--fg), 2);
     background: transparent;
@@ -41,6 +42,12 @@ input[type=number], input[type=text] {
     border-radius: 0.3em;
     border: 0.1em solid rgba(var(--fg), 0.2);
     font-size: 10pt;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 input[type=checkbox] {
@@ -327,6 +334,10 @@ a, a > * {
   padding: 0.2em;
   padding-right: 1em;
   font-size: 10pt;
+}
+
+#theme-select > * {
+  color: black;
 }
 
 #theme-select::after {
