@@ -12,6 +12,7 @@ html {
   display: block;
   content: url(logo.png);
   height: 2em;
+  transform: scale(.5);
   margin-top: -0.2em;
   opacity: 90%;
   padding: 0;
