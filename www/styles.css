@@ -16,7 +16,7 @@ html {
 }
 
 .logo::before {
-  content: url(www/logo.png);
+  content: url(logo.png);
 }
 
 button, input[type=submit] {
