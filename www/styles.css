@@ -8,7 +8,8 @@ html {
     background: rgb(var(--bg));
 }
 
-.logo {
+.logo::before {
+  content: url(www/logo.png);
   margin-top: -0.2em;
   padding: 0;
   opacity: 90%;
