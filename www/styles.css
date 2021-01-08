@@ -11,11 +11,14 @@ html {
 .logo::before {
   display: block;
   content: url(logo.png);
-  height: 2em;
+  height: 0;
   transform: scale(.5);
-  margin-top: -0.2em;
+  margin: 0;
   opacity: 90%;
   padding: 0;
+  transform-origin: top left;
+  position: relative;
+  top: -2.8em;
 }
 
 button, input[type=submit] {
