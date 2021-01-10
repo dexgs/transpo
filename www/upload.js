@@ -26,7 +26,6 @@ async function zipEncryptAndSend(files, ws, name) {
     for (var i = 0; i < files.length; i++) {
       const file = files[i];
       fileNames[i] = file.name;
-      totalSize += file.size;
       writer.write({
         name: "/" + file.name,
         lastModified: new Date(0),
