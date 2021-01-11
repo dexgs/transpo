@@ -15,6 +15,7 @@ A simple file sharing web application that is <b><s>a total ripoff of</s></b> in
 ## TO-DO:
 * Better error messages for the client
 * Clean up my JavaScript (this was my first real JS project)
+* Commit download to disk in chunks to reduce memory usage (without non-standard solutions like Chrome's FileSystem API)
 
 ## Installation and Setup:
 1) Make sure you have cargo installed.
