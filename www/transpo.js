@@ -14,7 +14,7 @@ let uploadIndicators = document.getElementById("upload-indicators");
 
 let disablableElements = [removeAllFilesButton, uploadButton, selectFilesButton];
 
-let progressBar = document.getElementById("progress-bar");
+const progressBar = document.getElementById("progress-bar");
 
 let uploadSize = 0;
 
@@ -128,11 +128,8 @@ const MAX_LENGTH = 18;
 function addUploadPreview(fileNames, uploadURL, keyString) {
   var preview = uploadTemplate.content.cloneNode(true);
 
-  var maxLength = MAX_LENGTH;
-
   if (fileNames.length > 1) {
     var quantity = "+" + (fileNames.length - 1) + " more";
-    maxLength -= quantity.length;
     preview.querySelector(".upload-quantity").textContent = quantity;
   }
 
@@ -141,9 +138,6 @@ function addUploadPreview(fileNames, uploadURL, keyString) {
   if (index != -1) {
     var fileExt = fileName.substring(index, fileName.length).substring(0, 5);
     var fileStem = fileName.substring(0, index);
-    if (fileStem.length > maxLength) {
-      fileStem = fileStem.substring(0, maxLength) + "… ";
-    }
     preview.querySelector(".upload-name").textContent = fileStem;
     preview.querySelector(".upload-extension").textContent = fileExt;
   } else {

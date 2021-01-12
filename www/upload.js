@@ -4,7 +4,7 @@ const { Reader, Writer } = window.conflux;
 export function upload(name, files) {
 
   var ws = new WebSocket("wss://" + document.location.host + document.location.pathname + "ws/" + name);
-
+  
   ws.addEventListener('open', function (event) {
     zipEncryptAndSend(files, ws, name);
   });
@@ -13,13 +13,9 @@ export function upload(name, files) {
 async function zipEncryptAndSend(files, ws, name) {
   var key = genKey();
   var nonce = new Uint8Array(12);
-
   var crypto = new JSChaCha20(key, nonce);
-  
   var uploaded = 0;
-
   var fileNames = new Array(files.length);
-
   if (files.length > 1) {
     var { readable, writable } = new Writer();
     var writer = writable.getWriter();
@@ -37,27 +33,24 @@ async function zipEncryptAndSend(files, ws, name) {
     fileNames[0] = files[0].name;
     var reader = files[0].stream().getReader();
   }
-
   new ReadableStream({
-    start(controller) {
-      pump();
-      function pump() {
-        reader.read().then(({done, value}) => {
-          if (done) {
-            setUiEnabled(true);
-            removeAllFiles();
-            addUploadPreview(fileNames, name, keyString(key));
-            controller.close();
-            setProgress(100, true);
-            return;
-          }
-          if (uploadSize > 2000000) {
-            uploaded += value.length;
-            setProgress(100 * uploaded / uploadSize, false);
-          }
-          ws.send(crypto.encrypt(value));
-          pump();
-        });
+    async start(controller) {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          setUiEnabled(true);
+          removeAllFiles();
+          addUploadPreview(fileNames, name, keyString(key));
+          controller.close();
+          setProgress(100, true);
+          return;
+        }
+        if (uploadSize > 2000000) {
+          uploaded += value.length;
+          const progress = 100 * uploaded / uploadSize;
+          setProgress(progress, false);
+        }
+        ws.send(crypto.encrypt(value));
       }
     }
   });

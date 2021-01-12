@@ -1,6 +1,13 @@
+/* get rid of chrome's borders on form inputs since I have my own borders */
+*,*:focus,*:hover{
+    outline:none;
+}
+
 * {
-    font-family: sans-serif;
     font-size-adjust: 0.47;
+    font-family: sans-serif;
+    font-size: 12pt;
+
     color: rgb(var(--fg));
 }
 
@@ -28,7 +35,8 @@ button, input[type=submit] {
     border: none;
     border-radius: 0.3em;
     padding: 0.5em 1em;
-    font-size-adjust: 0.5;
+    /*font-size-adjust: 0.5;*/
+    font-size: 75%;
     height: 2.5em;
 }
 
@@ -79,6 +87,10 @@ button:not(.x-button):enabled:active, input[type=submit]:active:enabled {
     opacity: 30%;
 }
 
+#select-files {
+  height: auto;
+}
+
 #upload:disabled {
   opacity: 100%;
   color: rgba(var(--button-fg), 0.3);
@@ -115,13 +127,10 @@ button:not(.x-button):enabled:active, input[type=submit]:active:enabled {
 
 #progress-bar {
   display: block;
-  width: 20%;
   height: 0.4em;
-  border-radius: 0.2em;
-  position: relative;
-  top: 0.6em;
-  margin: 0 -0.5em;
-  margin-top: -0.6em;
+  border-radius: 0 0.3em 0.3em 0.3em;
+  margin: 0;
+  margin-top: -0.4em;
   background: rgba(var(--button), 0.8);
 }
 
@@ -136,6 +145,7 @@ button:not(.x-button):enabled:active, input[type=submit]:active:enabled {
 
 h1, h3 {
     margin-top: 0;
+    margin-bottom: 0.5em;
 }
 
 h3 {
@@ -179,11 +189,31 @@ h3 {
 
 .upload-status {
     padding-bottom: 0.3em;
-    vertical-align: middle;
+    display: flex;
+    align-items: center;
+}
+
+/*.upload-status > a > * {
+  font-size: 80%;
+}*/
+
+.dl-link {
+  display: inline-flex;
+  overflow: hidden;
+  white-space: nowrap;
+  flex-grow: 1;
+}
+
+.upload-name {
+  overflow-x: hidden;
+  word-break: break-all;
+  white-space: nowrap;
+  text-overflow: "";
 }
 
 .upload-status > .x-button {
-    margin-top: 0.2em;
+    padding-left: 0.8em;
+    margin-right: 0.5em;
 }
 
 .file-area {
@@ -246,6 +276,7 @@ h3 {
     color: rgb(var(--fg));
     margin-right: 0.5em;
     background: rgba(var(--fg), 0.2);
+    white-space: nowrap;
 }
 
 .file-preview {
@@ -271,7 +302,7 @@ h3 {
 a, a > * {
   font-weight: bold;
   color: rgb(var(--accent));
-  text-decoration-thickness: 0.1em;
+  text-decoration: underline solid 0.1em;
 }
 
 .fine-print {
