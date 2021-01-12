@@ -1,13 +1,13 @@
 import { JSChaCha20 } from "./js-chacha20/src/jschacha20.js";
 const { Reader, Writer } = window.conflux;
 
-export function upload(name, files) {
+export async function upload(name, files) {
 
   var ws = new WebSocket("wss://" + document.location.host + document.location.pathname + "ws/" + name);
-  
-  ws.addEventListener('open', function (event) {
+ 
+  ws.onopen = function(event) {
     zipEncryptAndSend(files, ws, name);
-  });
+  };
 }
 
 async function zipEncryptAndSend(files, ws, name) {
@@ -38,6 +38,9 @@ async function zipEncryptAndSend(files, ws, name) {
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
+	  try {
+    	    writer.close();
+  	  } catch (e) {}
           setUiEnabled(true);
           removeAllFiles();
           addUploadPreview(fileNames, name, keyString(key));
@@ -54,9 +57,6 @@ async function zipEncryptAndSend(files, ws, name) {
       }
     }
   });
-  try {
-    writer.close();
-  } catch (e) {}
 }
 
 function genKey() {
