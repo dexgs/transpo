@@ -53,7 +53,8 @@ async function zipEncryptAndSend(files, ws, name) {
           await new Promise(r => setTimeout(r, 0));
           setProgress(progress, false);
         }
-        ws.send(crypto.encrypt(value));
+        const ciphertext = crypto.encrypt(value);
+        ws.send(ciphertext);
       }
     }
   });
