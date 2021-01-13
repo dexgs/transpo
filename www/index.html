@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+	<meta name="viewport" content="width=device-width, initial-scale=0.7">
         <meta charset="utf-8">
         <title>Transpo</title>
 
@@ -18,7 +19,7 @@
                 <form id="upload-form" autocomplete="off">
                     <div id="file-area" class="file-area">
                         <span class="file-area-prompt">
-                        Drag and drop or
+                        <span class="dnd-text">Drag and drop or</span>
                         <!--https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js-->
                         <button id="select-files" type="button" onclick="document.getElementById('file-input').click();">Select Files</button>
                         </span>
@@ -66,7 +67,9 @@
             </div>
             <div class="completed-pane">
                 <h3>Uploaded</h3>
-                <div id="upload-indicators">
+		<div style="position: relative; height: calc(100% - 1.5em)">
+                    <div id="upload-indicators">
+		    </div>
                 </div>
             </div>
             <div class="theme-select-box">

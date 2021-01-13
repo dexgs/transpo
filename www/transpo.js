@@ -18,6 +18,16 @@ const progressBar = document.getElementById("progress-bar");
 
 let uploadSize = 0;
 
+// https://css-tricks.com/the-trick-to-viewport-units-on-mobile/
+function updateVhProperty() {
+  let vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+window.addEventListener('resize', () => {
+  updateVhProperty();
+});
+updateVhProperty();
+
 fileArea.addEventListener("drop", dropFiles, false);
 
 function dropFiles(e) {

@@ -88,6 +88,8 @@ button:not(.x-button):enabled:active, input[type=submit]:active:enabled {
 }
 
 #select-files {
+  background: rgb(var(--accent));
+  color: var(--accent-fg);
   height: auto;
 }
 
@@ -100,6 +102,7 @@ button:not(.x-button):enabled:active, input[type=submit]:active:enabled {
 .upload-settings > p {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .upload-settings > p {
@@ -138,9 +141,8 @@ button:not(.x-button):enabled:active, input[type=submit]:active:enabled {
     margin-left: 0.5em;
 }
 
-.body {
-    display: flex;
-    align-items: center;
+body {
+    margin: 0;
 }
 
 h1, h3 {
@@ -157,7 +159,7 @@ h3 {
     width: 54.6em;
     max-width: 95%;
     margin: 0 auto;
-    margin-top: 8%;
+    margin-top: max(8%, 2em);
     border: solid 0.1em rgba(var(--fg), 0.2);
     border-radius: 0.3em;
     padding: 0.3em;
@@ -173,8 +175,8 @@ h3 {
 }
 
 .upload-pane {
-    align-self: center;
     width: 33em;
+    max-width: calc(100% - 1em);
     padding: 0;
 }
 
@@ -185,6 +187,20 @@ h3 {
     flex-grow: 2;
     width: 17em;
     max-width: 32em;
+    min-height: 8em;
+}
+
+#upload-indicators {
+  position: absolute;
+  max-height: 100%;
+  width: 100%;
+  direction: rtl;
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+
+#upload-indicators > * {
+  direction: ltr
 }
 
 .upload-status {
@@ -217,7 +233,7 @@ h3 {
 }
 
 .file-area {
-    min-height: 10em;
+    height: 18em;
     background: rgba(var(--accent), 0.1);
     border: dashed 3px rgb(var(--accent));
     border-radius: 0.3em;
@@ -228,9 +244,7 @@ h3 {
 
 .file-area-prompt {
     width: 100%;
-    padding: 30px 0px;
-    padding-bottom: 10pt;
-    padding-top: 4%;
+    padding: 0.8em 0;
     text-align: center;
     display: inline-block;
 }
@@ -267,7 +281,7 @@ h3 {
     scrollbar-color: rgba(var(--accent), 0.4) transparent;
     scrollbar-radius: 0.2em;
     overflow-y: auto;
-    height: 10em;
+    height: calc(100% - 4.5em);
     margin-top: 0;
     padding-top: 0;
 }
@@ -373,4 +387,42 @@ a, a > * {
 
 #theme-select::after {
   content: "click";
+}
+
+@media (max-width: 590px) {
+  .dnd-text {
+    display: none;
+  }
+
+  #select-files {
+    margin-left: 0;
+    font-size: 11pt;
+    width: 100%;
+  }
+
+  .file-area {
+    height: 11em;
+  }
+
+  .file-area-prompt {
+    padding-top: 0.5em;
+  }
+
+  .ui-frame {
+    min-height: 38em;
+    height: 70vh;
+    /* https://css-tricks.com/the-trick-to-viewport-units-on-mobile/ */
+    height: calc(var(--vh, 1vh) * 87);
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .completed-pane {
+    width: calc(100% - 2em);
+    min-height: 0;
+  }
+
+  #upload {
+    font-size: 12pt;
+  }
 }
