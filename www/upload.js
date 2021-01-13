@@ -38,9 +38,6 @@ async function zipEncryptAndSend(files, ws, name) {
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
-	  try {
-    	    writer.close();
-  	  } catch (e) {}
           setUiEnabled(true);
           removeAllFiles();
           addUploadPreview(fileNames, name, keyString(key));
@@ -51,12 +48,18 @@ async function zipEncryptAndSend(files, ws, name) {
         if (uploadSize > 2000000) {
           uploaded += value.length;
           const progress = 100 * uploaded / uploadSize;
+          // Firefox is fine without this, but Chromium will not yield and allow
+          // the progress bar to update without this line.
+          await new Promise(r => setTimeout(r, 0));
           setProgress(progress, false);
         }
         ws.send(crypto.encrypt(value));
       }
     }
   });
+  try {
+    writer.close();
+  } catch (e) {}
 }
 
 function genKey() {
