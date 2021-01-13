@@ -58,7 +58,7 @@ async function zipEncryptAndSend(files, ws, name) {
         const numChunks = ~~(ciphertext.length / 60000);
         for (var i = 0; i < numChunks; i++) {
           const index = i * 60000;
-          console.log(index + " - " index + 60000);
+          console.log(index + " - " + (index + 60000));
           ws.send(ciphertext.slice(index * 60000, index + 60000));
           await new Promise(r => setTimeout(r, 10));
         }
