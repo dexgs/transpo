@@ -1,9 +1,10 @@
 use serde::Deserialize;
 use actix::{Actor, StreamHandler};
 use actix_files::{NamedFile, Files};
-use actix_web::{web::{self, Form}, App, HttpServer, HttpRequest, HttpResponse, Responder, Result};
+use actix_web::{web::{self, Bytes, Form}, App, HttpServer, HttpRequest, HttpResponse, Responder, Result};
 use actix_http::error::{ErrorPreconditionFailed, ErrorInsufficientStorage};
 use actix_web_actors::ws;
+use actix_web_actors::ws::WebsocketContext;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::Hasher;
 use std::path::PathBuf;
@@ -92,6 +93,21 @@ struct UploadWs {
     f: File
 }
 
+impl UploadWs {
+    fn write_bytes(&mut self, bin: Bytes, ctx: &mut WebsocketContext<UploadWs>) {
+        if let Ok(b) = self.f.write(&bin) {
+            self.num_bytes += b;
+            if self.num_bytes > config::MAX_UPLOAD_SIZE {
+                ctx.close(None);
+            } else {
+                ctx.text("got bytes");
+            }
+        } else {
+            ctx.close(None);
+        }
+    }
+}
+
 impl Actor for UploadWs {
     type Context = ws::WebsocketContext<Self>;
 }
@@ -99,17 +115,12 @@ impl Actor for UploadWs {
 impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for UploadWs {
     fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
         match msg {
-            Ok(ws::Message::Binary(bin)) => {
-                if let Ok(b) = self.f.write(&bin) {
-                    self.num_bytes += b;
-                    if self.num_bytes > config::MAX_UPLOAD_SIZE {
-                        ctx.close(None);
-                    }
-                } else {
-                    ctx.close(None);
-                }
-            },
-            _ => {},
+            Ok(ws::Message::Binary(bin)) => self.write_bytes(bin, ctx),
+            Ok(ws::Message::Continuation(actix_http::ws::Item::FirstText(bin))) => self.write_bytes(bin, ctx),
+            Ok(ws::Message::Continuation(actix_http::ws::Item::FirstBinary(bin))) => self.write_bytes(bin, ctx),
+            Ok(ws::Message::Continuation(actix_http::ws::Item::Continue(bin))) => self.write_bytes(bin, ctx),
+            Ok(ws::Message::Continuation(actix_http::ws::Item::Last(bin))) => self.write_bytes(bin, ctx),
+            _ => {println!("{:?}", msg)},
         };
     }
 }

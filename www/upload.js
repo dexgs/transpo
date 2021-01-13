@@ -10,6 +10,8 @@ export async function upload(name, files) {
   };
 }
 
+const chunkSize = 60000;
+
 async function zipEncryptAndSend(files, ws, name) {
   var key = genKey();
   var nonce = new Uint8Array(12);
@@ -43,6 +45,7 @@ async function zipEncryptAndSend(files, ws, name) {
           addUploadPreview(fileNames, name, keyString(key));
           controller.close();
           setProgress(100, true);
+          //ws.close();
           return;
         }
         if (uploadSize > 2000000) {
@@ -53,7 +56,18 @@ async function zipEncryptAndSend(files, ws, name) {
           await new Promise(r => setTimeout(r, 0));
           setProgress(progress, false);
         }
-        ws.send(crypto.encrypt(value));
+        const ciphertext = crypto.encrypt(value);
+        // upload must be chunked since Chromium browsers like to send the file
+        // in 2MB+ increments which the server can't process.
+        const numChunks = ~~(ciphertext.length / chunkSize);
+        for (var i = 0; i < numChunks; i++) {
+          const startIndex = i * chunkSize;
+          const endIndex = startIndex + chunkSize;
+          const chunk = ciphertext.slice(startIndex, endIndex);
+          ws.send(chunk);
+        }
+        const endChunk = ciphertext.slice(numChunks * chunkSize);
+        ws.send(endChunk);
       }
     }
   });
