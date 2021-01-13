@@ -208,7 +208,7 @@ h3 {
   overflow-x: hidden;
   word-break: break-all;
   white-space: nowrap;
-  text-overflow: "";
+  text-overflow: ellipsis;
 }
 
 .upload-status > .x-button {
