@@ -19,11 +19,8 @@ export async function downloadAndDecrypt(password) {
   const crypto = new JSChaCha20(key, nonce); 
   await fetch(document.URL.substring(0, index), {
     method: 'POST',
-    //mode: 'cors',
     cache: 'no-cache',
-    //credentials: 'same-origin',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    //referrerPolicy: 'no-referrer',
     body: "password=" + encodeURIComponent(password)
   }).then(response => {
     if (response.status == 200) {
