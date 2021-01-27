@@ -102,10 +102,7 @@ button:not(.x-button):enabled:active, input[type=submit]:active:enabled {
 .upload-settings > p {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
-}
-
-.upload-settings > p {
+    flex-wrap: nowrap;
 }
 
 .upload-settings > p > label {
@@ -114,6 +111,11 @@ button:not(.x-button):enabled:active, input[type=submit]:active:enabled {
 
 .upload-settings > p > input[type=text], input[type=number] {
     margin-left: 1.4em;
+    padding: 0.6em;
+}
+
+.upload-settings > p > input[type=number] {
+  text-align: center;
 }
 
 
@@ -159,7 +161,7 @@ h3 {
     width: 54.6em;
     max-width: 95%;
     margin: 0 auto;
-    margin-top: max(8%, 2em);
+    margin-top: 12vh;
     border: solid 0.1em rgba(var(--fg), 0.2);
     border-radius: 0.3em;
     padding: 0.3em;
@@ -389,6 +391,13 @@ a, a > * {
   content: "click";
 }
 
+@media (max-width: 60em) {
+  .ui-frame {
+    width: 34em;
+    max-width: 95%;
+  }
+}
+
 @media (max-width: 590px) {
   .dnd-text {
     display: none;
@@ -409,10 +418,11 @@ a, a > * {
   }
 
   .ui-frame {
+    margin-top: 2.1em;
     min-height: 38em;
     height: 70vh;
     /* https://css-tricks.com/the-trick-to-viewport-units-on-mobile/ */
-    height: calc(var(--vh, 1vh) * 87);
+    height: calc(var(--vh, 1vh) * 100 - 5.5em);
     flex-direction: column;
     align-items: center;
   }
