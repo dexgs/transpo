@@ -13,7 +13,7 @@ A simple file sharing web application that is <b><s>a total ripoff of</s></b> in
 * Client-side encryption and decryption of files (not bullet-proof, but a whole lot better than nothing)
 * Themes (light and dark are inculded in this repository, but adding your own is trivial)
 
-##Notes:
+## Notes:
 * IndexedDB does not currently download the file from storage on Firefox (tested on 84)
 
 ## TO-DO:
