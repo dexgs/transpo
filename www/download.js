@@ -96,9 +96,11 @@ async function decryptStream(response, crypto) {
 
 async function decryptAndDownload(response, crypto, fileId) {
   // https://medium.com/free-code-camp/a-quick-but-complete-guide-to-indexeddb-25f030425501
-  var request = window.indexedDB.open("transpo", 1, (upgradeDB) => {
-    upgradeDB.createObjectStore("files");
-  });
+  var request = window.indexedDB.open("transpo", 1);
+  request.onupgradeneeded = function(event) {
+    let db = event.target.result;
+    db.createObjectStore("files");
+  };
   request.onsuccess = async function(event) {
     let db = event.target.result;
     let buffer = new Blob();
@@ -106,11 +108,13 @@ async function decryptAndDownload(response, crypto, fileId) {
     const reader = response.body.getReader();
     while (true) {
       await new Promise(r => setTimeout(r, 0));
+      const transaction = db.transaction("files", "readwrite");
+      transaction.oncomplete = function(event) {
+        console.log("loldone");
+      };
       const store = transaction.objectStore("files");
       const { done, value } = await reader.read();
       if (done) { break; }
-      const transaction = db.transaction("files", "readwrite");
-      const store = transaction.objectStore("files");
       const plaintext = crypto.decrypt(value);
       buffer = new Blob([buffer, plaintext], { type: "application/octet-stream" });
       if (buffer.size > 50000000) {
