@@ -7,15 +7,18 @@ A simple file sharing web application that is <b><s>a total ripoff of</s></b> in
 ## Features:
 * Upload files that will last for a given amount of time
 * Option to limit the number of times a file can be downloaded before it expires
+* Uses the IndexedDB API to commit large files to disk during download (saves memory)
 * Option to password protect files
 * Compresses multi-file uploads
 * Client-side encryption and decryption of files (not bullet-proof, but a whole lot better than nothing)
 * Themes (light and dark are inculded in this repository, but adding your own is trivial)
 
+## Notes:
+* IndexedDB does not currently download the file from storage on Firefox (tested on 84)
+
 ## TO-DO:
 * Better error messages for the client
 * Clean up my JavaScript (this was my first real JS project)
-* Commit download to disk in chunks to reduce memory usage (without non-standard solutions like Chrome's FileSystem API)
 
 ## Installation and Setup:
 1) Make sure you have cargo installed.
