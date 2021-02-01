@@ -109,9 +109,6 @@ async function decryptAndDownload(response, crypto, fileId) {
     while (true) {
       await new Promise(r => setTimeout(r, 0));
       const transaction = db.transaction("files", "readwrite");
-      transaction.oncomplete = function(event) {
-        console.log("loldone");
-      };
       const store = transaction.objectStore("files");
       const { done, value } = await reader.read();
       if (done) { break; }
