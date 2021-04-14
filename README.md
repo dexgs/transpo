@@ -2,8 +2,6 @@
 A simple file sharing web application that is <b><s>a total ripoff of</s></b> inspired by the late 
 [Firefox Send](https://github.com/mozilla/send) which I miss very dearly.
 
-![screenshot of frontend](screenshot.png)
-
 ## Features:
 * Upload files that will last for a given amount of time
 * Option to limit the number of times a file can be downloaded before it expires
