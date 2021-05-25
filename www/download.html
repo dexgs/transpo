@@ -11,7 +11,6 @@
     </head>
     <body>
         <div class="ui-frame" style="width: 18em;">
-            <h3 style="position: relative; top: -2em; margin: 0 -2em; margin-bottom: -2em">This file is password protected</h3>
             <button id="download-button" style="width: 100%; height: 100%">Download</button>
             <div class="fine-print" style="position: relative; top: 2em; margin: 0 -2em;margin-bottom: -6em;">
                 Please keep this tab open while downloading. <br/>
@@ -21,7 +20,10 @@
         <script src="www/download.js" type="module"></script>
         <script type="module">
             import { downloadAndDecrypt } from "./www/download.js";
-            document.getElementById("download-button").onclick = downloadAndDecrypt("");
+            function downloadNoPassword() {
+                downloadAndDecrypt("");
+            }
+            document.getElementById("download-button").onclick = downloadNoPassword;
         </script>
     </body>
 </html>
