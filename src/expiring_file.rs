@@ -9,7 +9,8 @@ use std::borrow::BorrowMut;
 use std::path::PathBuf;
 
 
-// deletes parent directory of file
+// Deletes directory containing file after it
+// has been completely sent to a client.
 pub struct ExpiringFile {
     file: NamedFile,
 }
