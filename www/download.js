@@ -63,7 +63,7 @@ function fileNameParts(response) {
   let fileName = response.headers.get("content-disposition");
   fileName = fileName.substring(fileName.indexOf("filename") + 10, fileName.length - 1);
   if (fileName.length == 0) {
-    fileName = "transpo_" + dasteString() + ".zip";
+    fileName = "transpo_" + dateString() + ".zip";
     return [ fileName, "application/zip"];
   } else {
     const extIndex = fileName.lastIndexOf(".");
