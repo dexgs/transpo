@@ -140,6 +140,7 @@ async function decryptAndDownload(response, crypto, fileId) {
         if (index == numChunks - 1) {
           finalBlob = new Blob([finalBlob, buffer]);
           downloadBlob(finalBlob, fileName, fileType);
+          await store.clear();
         }
       };
     }
