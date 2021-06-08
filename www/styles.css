@@ -102,7 +102,7 @@ button:not(.x-button):enabled:active, input[type=submit]:active:enabled {
 .upload-settings > p {
     display: flex;
     align-items: center;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
 }
 
 .upload-settings > p > label {
