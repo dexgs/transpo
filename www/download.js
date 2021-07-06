@@ -108,8 +108,6 @@ async function decryptAndDownload(response, crypto, fileId) {
     const reader = response.body.getReader();
     while (true) {
       await new Promise(r => setTimeout(r, 0));
-      const transaction = db.transaction("files", "readwrite");
-      const store = transaction.objectStore("files");
       const { done, value } = await reader.read();
       if (done) { break; }
       const plaintext = crypto.decrypt(value);
@@ -117,23 +115,23 @@ async function decryptAndDownload(response, crypto, fileId) {
       if (buffer.size > 50000000) {
         let currentChunk = numChunks;
         let currentBuffer = buffer;
-        store.delete(fileId + numChunks).onsuccess = function() {
-          store.put(currentBuffer, fileId + currentChunk);
-        }
+        const transaction = db.transaction("files", "readwrite");
+        const store = transaction.objectStore("files");
+        await store.put(currentBuffer, fileId + currentChunk);
         buffer = new Blob();
         numChunks += 1;
       }
     }
-    const transaction = db.transaction("files", "readwrite");
-    const store = transaction.objectStore("files");
     const parts = fileNameParts(response);
     const fileName = parts[0];
     const fileType = parts[1];
     let finalBlob = new Blob();
+    const transaction = db.transaction("files", "readwrite");
+    const store = transaction.objectStore("files");
     for (var i = 0; i < numChunks; i++) {
       let index = i;
       const key = fileId + index;
-      store.get(key).onsuccess = function(e) {
+      store.get(key).onsuccess = async function(e) {
         const blob = e.target.result;
         finalBlob = new Blob([finalBlob, blob], { type: "application/octet-stream" });
         store.delete(key);
