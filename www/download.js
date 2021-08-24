@@ -82,9 +82,10 @@ async function decryptStream(response, crypto) {
   const reader = response.getReader();
   return new ReadableStream({
     async start(controller) {
+      let downloadedBytes = 
       while (true) {
         await new Promise(r => setTimeout(r, 0));
-        const { done, value } = await reader.read();
+        const { value, done } = await reader.read();
         if (done) { break; }
         controller.enqueue(crypto.decrypt(value));
       }
@@ -102,6 +103,7 @@ async function decryptAndDownload(response, crypto, fileId) {
     db.createObjectStore("files");
   };
   request.onsuccess = async function(event) {
+    let downloadedBytes = 0;
     let db = event.target.result;
     let buffer = new Blob();
     let numChunks = 0;
@@ -110,6 +112,7 @@ async function decryptAndDownload(response, crypto, fileId) {
       await new Promise(r => setTimeout(r, 0));
       const { done, value } = await reader.read();
       if (done) { break; }
+      downloadedBytes += value.size;
       const plaintext = crypto.decrypt(value);
       buffer = new Blob([buffer, plaintext], { type: "application/octet-stream" });
       if (buffer.size > 50000000) {
