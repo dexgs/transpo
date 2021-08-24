@@ -108,12 +108,14 @@ async function decryptAndDownload(response, crypto, fileId) {
     let db = event.target.result;
     let buffer = new Blob();
     let numChunks = 0;
+    let progressIndicator = document.getElementById("download-progress")
     const reader = response.body.getReader();
     while (true) {
       await new Promise(r => setTimeout(r, 0));
       const { done, value } = await reader.read();
       if (done) { break; }
       downloadedBytes += value.size;
+      progressIndicator.innerHTML = sizeString(downloadedBytes) + " downloaded";
       const plaintext = crypto.decrypt(value);
       buffer = new Blob([buffer, plaintext], { type: "application/octet-stream" });
       if (buffer.size > 50000000) {
