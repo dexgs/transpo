@@ -144,6 +144,7 @@ button:not(.x-button):enabled:active, input[type=submit]:active:enabled {
 }
 
 div#download-progress {
+    padding: 10px;
     text-align: center;
 }
 
