@@ -143,6 +143,10 @@ button:not(.x-button):enabled:active, input[type=submit]:active:enabled {
     margin-left: 0.5em;
 }
 
+div#download-progress {
+    text-align: center;
+}
+
 body {
     margin: 0;
 }
