@@ -11,13 +11,13 @@
     </head>
     <body>
         <div class="ui-frame" style="width: 18em; min-height: unset; height: 2.4em; flex-direction: row;">
-            <h3 style="position: relative; top: -2em; margin: 0 -2em; margin-bottom: -2em">This file is password protected</h3>
+            <h3 style="position: relative; bottom: 2.4em; margin: 0 -2em; margin-bottom: -2em">This file is password protected</h3>
             <form id="unlock-form" method="post" autocomplete="off" style="width: 100%; display: flex">
                 <input name="password" id="password" type="text" autocomplete="new-password" style="flex-grow: 1">
-                <input id="unlock" type="submit" value="Unlock" style="height: 100%">
+                <input id="unlock" type="submit" value="Unlock" style="height: unset">
             </form>
             <div id="download-progress"></div>
-            <div class="fine-print" style="position: relative; top: 2em; margin: 0 -2em;margin-bottom: -6em;">
+            <div class="fine-print" style="min-width: 300px">
                 Please keep this tab open while downloading. <br/>
                 The download is decrypted by a script on this page.
             </div>
