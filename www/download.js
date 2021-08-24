@@ -82,7 +82,11 @@ async function decryptStream(response, crypto) {
   const reader = response.getReader();
   return new ReadableStream({
     async start(controller) {
+<<<<<<< HEAD
       let downloadedBytes = 0;
+=======
+      let downloadedBytes = 
+>>>>>>> 0c7cedb6532f94be01dd4e23fd1ec0426e3cff0d
       while (true) {
         await new Promise(r => setTimeout(r, 0));
         const { value, done } = await reader.read();
