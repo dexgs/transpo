@@ -114,7 +114,7 @@ async function decryptAndDownload(response, crypto, fileId) {
       await new Promise(r => setTimeout(r, 0));
       const { done, value } = await reader.read();
       if (done) { break; }
-      downloadedBytes += value.size;
+      downloadedBytes += value.length;
       progressIndicator.innerHTML = sizeString(downloadedBytes) + " downloaded";
       const plaintext = crypto.decrypt(value);
       buffer = new Blob([buffer, plaintext], { type: "application/octet-stream" });
@@ -128,6 +128,7 @@ async function decryptAndDownload(response, crypto, fileId) {
         numChunks += 1;
       }
     }
+    progressIndicator.innerHTML += " (finished)"
     const parts = fileNameParts(response);
     const fileName = parts[0];
     const fileType = parts[1];
