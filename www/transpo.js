@@ -136,8 +136,6 @@ function setDisabledClass(state) {
   }
 }
 
-const MAX_LENGTH = 18;
-
 function addUploadPreview(fileNames, uploadURL, keyString) {
   var preview = uploadTemplate.content.cloneNode(true);
 
@@ -149,7 +147,7 @@ function addUploadPreview(fileNames, uploadURL, keyString) {
   var fileName = fileNames[0];
   var index = fileName.lastIndexOf(".");
   if (index != -1) {
-    var fileExt = fileName.substring(index, fileName.length).substring(0, 5);
+    var fileExt = fileName.substring(index, fileName.length).substring(0, 8);
     var fileStem = fileName.substring(0, index);
     preview.querySelector(".upload-name").textContent = fileStem;
     preview.querySelector(".upload-extension").textContent = fileExt;
