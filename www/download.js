@@ -11,6 +11,8 @@ const FILE_TYPES = {
   "txt": "text/plain",
   "avi": "video/x-msvideo",
 };
+
+
 export async function downloadAndDecrypt(password) {
   const index = document.URL.indexOf("#") + 1;
   const keyString = document.URL.substring(index, document.URL.length);
@@ -32,33 +34,27 @@ export async function downloadAndDecrypt(password) {
           .then(response => response.blob()).then(blob => {
             var fileName = response.headers.get("content-disposition");
             fileName = fileName.substring(fileName.indexOf("filename") + 10, fileName.length - 1);
-            // https://stackoverflow.com/a/42274086
-            const file = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = file;
+            var fileType = "application/octet-stream";
             if (fileName.length == 0) {
-              a.download = "transpo_" + dateString() + ".zip";
-              a.type = "application/zip";
+              fileName = "transpo_" + dateString() + ".zip";
+              fileType = "application/zip";
             } else {
-              a.download = fileName;
               var extIndex = fileName.lastIndexOf(".");
               if (extIndex != -1) {
                 var ext = fileName.substring(extIndex, fileName.length);
                 if (ext in FILE_TYPES) {
-                  a.type = FILE_TYPES[ext];
+                  fileType = FILE_TYPES[ext];
                 }
               }
             }
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
+            downloadBlob(blob, fileName, fileType);
           });
       }
-    } else {
-      // handle error
     }
   });
 }
+
+
 function fileNameParts(response) {
   let fileName = response.headers.get("content-disposition");
   fileName = fileName.substring(fileName.indexOf("filename") + 10, fileName.length - 1);
@@ -77,6 +73,8 @@ function fileNameParts(response) {
     }
   }
 }
+
+
 // https://github.com/mdn/dom-examples/blob/master/streams/simple-pump/index.html
 async function decryptStream(response, crypto) {
   const reader = response.getReader();
@@ -96,6 +94,7 @@ async function decryptStream(response, crypto) {
   });
 }
 
+
 async function decryptAndDownload(response, crypto, fileId) {
   // https://medium.com/free-code-camp/a-quick-but-complete-guide-to-indexeddb-25f030425501
   var request = window.indexedDB.open("transpo", 1);
@@ -108,7 +107,7 @@ async function decryptAndDownload(response, crypto, fileId) {
     let db = event.target.result;
     let buffer = new Blob();
     let numChunks = 0;
-    let progressIndicator = document.getElementById("download-progress")
+    let progressIndicator = document.getElementById("download-progress");
     const reader = response.body.getReader();
     while (true) {
       await new Promise(r => setTimeout(r, 0));
@@ -154,6 +153,8 @@ async function decryptAndDownload(response, crypto, fileId) {
     }
   };
 }
+
+
 function getKey(keyString) {
   const key = new Uint8Array(32);
   for (var i = 0; i < keyString.length / 2; i++) {
@@ -162,10 +163,14 @@ function getKey(keyString) {
   }
   return key;
 }
+
+
 function hexToByte(s) {
   const bytes = new TextEncoder().encode(s);
   return 16 * hexDigit(bytes[0]) + hexDigit(bytes[1]);
 }
+
+
 function hexDigit(n) {
   if (n >= 97) {
     return n - 87;
@@ -173,6 +178,8 @@ function hexDigit(n) {
     return n - 48;
   }
 }
+
+
 function dateString() {
   let string = "";
   const date = new Date();
@@ -184,6 +191,8 @@ function dateString() {
   string += date.getSeconds();
   return string;
 }
+
+
 function downloadBlob(blob, fileName, fileType) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

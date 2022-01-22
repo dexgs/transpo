@@ -3,9 +3,11 @@ function setTheme(theme) {
   loadTheme(theme);
 }
 
+
 function loadTheme(theme) {
   document.getElementById("theme").href = theme;
 }
+
 
 function loadStoredTheme() {
   const theme = window.localStorage.getItem("theme");
@@ -17,6 +19,7 @@ function loadStoredTheme() {
   }
 }
 
+
 function updateDropdown(theme) {
   // https://stackoverflow.com/a/7373115
   const themeSelect = document.getElementById("theme-select");
@@ -27,5 +30,6 @@ function updateDropdown(theme) {
     }
   }
 }
+
 
 loadStoredTheme()
