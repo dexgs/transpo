@@ -1,14 +1,15 @@
 import { JSChaCha20 } from "./js-chacha20/src/jschacha20.js";
 const { Reader, Writer } = window.conflux;
 
-export async function upload(name, files) {
 
+export async function upload(name, files) {
   var ws = new WebSocket("wss://" + document.location.host + document.location.pathname + "ws/" + name);
  
   ws.onopen = function(event) {
     zipEncryptAndSend(files, ws, name);
   };
 }
+
 
 const chunkSize = 60000;
 
@@ -76,6 +77,7 @@ async function zipEncryptAndSend(files, ws, name) {
   } catch (e) {}
 }
 
+
 function genKey() {
   var key = window.crypto.getRandomValues(new Uint8Array(32));
   return key;
@@ -90,7 +92,9 @@ function keyString(key) {
   return output;
 }
 
+
 const hexChars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
+
 
 function byteToHex(b) {
   var firstDigit = ~~(b / 16);

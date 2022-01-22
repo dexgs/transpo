@@ -44,6 +44,7 @@ function preventDefaults (e) {
   e.stopPropagation()
 }
 
+
 function addFiles(files) {
     for (var i = 0; i < files.length; i++) {
         var file = files.item(i);
@@ -56,6 +57,7 @@ function addFiles(files) {
     updateFiles();
 }
 
+
 function addFilePreview(file) {
     var preview = previewTemplate.content.cloneNode(true);
     var nameLabel = preview.querySelector(".file-name");
@@ -66,6 +68,7 @@ function addFilePreview(file) {
     filePreviews.appendChild(preview);
 }
 
+
 function removePreviewAndFile(preview) {
     var fileName = preview.querySelector(".file-name").textContent;
     uploadSize -= fileMap.get(fileName).size;
@@ -74,12 +77,14 @@ function removePreviewAndFile(preview) {
     updateFiles();
 }
 
+
 function removeAllFiles() {
     var length = filePreviews.children.length;
     for (var i = 0; i < length; i++) {
         removePreviewAndFile(filePreviews.children[0]);
     }
 }
+
 
 function updateFiles() {
     const dt = new DataTransfer();
@@ -98,6 +103,7 @@ function updateFiles() {
 
 let units = ["B", "KB", "MB", "GB", "PB"];
 
+
 function sizeString(numBytes) {
     if (numBytes ==  0) {
         return "0B";
@@ -109,6 +115,7 @@ function sizeString(numBytes) {
         return "Big";
     }
 }
+
 
 function setUiEnabled(state) {
   for (var i = 0; i < disablableElements.length; i++) {
@@ -124,6 +131,7 @@ function setUiEnabled(state) {
   });
 }
 
+
 function setDisabledClass(state) {
   if (state) {
     for (var i = 0; i < disablableElements.length; i++) {
@@ -135,6 +143,7 @@ function setDisabledClass(state) {
     }
   }
 }
+
 
 function addUploadPreview(fileNames, uploadURL, keyString) {
   var preview = uploadTemplate.content.cloneNode(true);
@@ -171,6 +180,7 @@ function addUploadPreview(fileNames, uploadURL, keyString) {
   uploadIndicators.appendChild(preview);
 }
 
+
 function setProgress(progress, isDone) {
   progressBar.style.width = progress + "%";
   if (isDone) {
@@ -179,6 +189,7 @@ function setProgress(progress, isDone) {
     progressBar.style.display = "block";
   }
 }
+
 
 function copyDownloadLink(preview) {
   var link = preview.querySelector("a");
