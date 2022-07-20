@@ -1,4 +1,4 @@
-# transpo
+# ARCHIVED. See transpo2 for an improved version of this software.
 A simple file sharing web application that is <b><s>a total ripoff of</s></b> inspired by the late 
 [Firefox Send](https://github.com/mozilla/send) which I miss very dearly.
 
